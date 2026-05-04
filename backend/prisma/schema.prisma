@@ -1,0 +1,294 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Division {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique @db.VarChar(20)
+  description String?
+  matches     Match[]
+  teams       Team[]
+
+  @@map("divisions")
+}
+
+model Season {
+  id                Int      @id @default(1) @map("season_id")
+  startDate         DateTime @map("start_date")
+  endDate           DateTime @map("end_date")
+  weeksCount        Int      @default(10) @map("weeks_count")
+  isActive          Boolean  @default(true) @map("is_active")
+  scheduleGenerated Boolean  @default(false) @map("schedule_generated")
+  groupsConfigured  Boolean  @default(false) @map("groups_configured")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@map("seasons")
+}
+
+model TeamApplication {
+  id              String              @id @default(uuid())
+  teamName        String              @map("team_name") @db.VarChar(100)
+  division        DivisionEnum
+  captainName     String              @map("captain_name") @db.VarChar(100)
+  captainPhone    String              @map("captain_phone") @db.VarChar(20)
+  captainEmail    String              @map("captain_email") @db.VarChar(100)
+  emblemUrl       String?             @map("emblem_url")
+  status          ApplicationStatus   @default(pending)
+  rejectionReason String?             @map("rejection_reason")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  reviewedAt      DateTime?           @map("reviewed_at")
+  reviewedById    String?             @map("reviewed_by")
+  players         PlayerApplication[]
+  reviewedBy      AdminUser?          @relation(fields: [reviewedById], references: [id])
+  team            Team?               @relation("ApplicationToTeam")
+
+  @@map("team_applications")
+}
+
+model Team {
+  id             String           @id @default(uuid())
+  name           String           @unique @db.VarChar(100)
+  divisionId     Int              @map("division_id")
+  groupLetter    String?          @map("group_letter") @db.Char(1)
+  captainName    String           @map("captain_name") @db.VarChar(100)
+  emblemUrl      String?          @map("emblem_url")
+  isWaiting      Boolean          @default(true) @map("is_waiting")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  applicationId  String?          @unique @map("application_id")
+  awayMatches    Match[]          @relation("AwayTeam")
+  homeMatches    Match[]          @relation("HomeTeam")
+  mvpVotes       MVPVote[]        @relation("VoterTeam")
+  players        Player[]
+  refereeRatings RefereeRating[]  @relation("RatingTeam")
+  application    TeamApplication? @relation("ApplicationToTeam", fields: [applicationId], references: [id])
+  division       Division         @relation(fields: [divisionId], references: [id])
+
+  @@index([divisionId, groupLetter])
+  @@index([isWaiting])
+  @@map("teams")
+}
+
+model Player {
+  id          String         @id @default(uuid())
+  teamId      String         @map("team_id")
+  fullName    String         @map("full_name") @db.VarChar(100)
+  birthDate   DateTime       @map("birth_date")
+  heightCm    Int            @map("height_cm")
+  position    PositionEnum
+  skillLevel  SkillLevelEnum @map("skill_level")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  receivedMVP MVPVote[]      @relation("MVPPlayer")
+  team        Team           @relation(fields: [teamId], references: [id])
+
+  @@index([teamId])
+  @@map("players")
+}
+
+model PlayerApplication {
+  id            String          @id @default(uuid())
+  applicationId String          @map("application_id")
+  fullName      String          @map("full_name") @db.VarChar(100)
+  birthDate     DateTime        @map("birth_date")
+  heightCm      Int             @map("height_cm")
+  position      PositionEnum
+  skillLevel    SkillLevelEnum  @map("skill_level")
+  application   TeamApplication @relation(fields: [applicationId], references: [id])
+
+  @@map("player_applications")
+}
+
+model Match {
+  id             String          @id @default(uuid())
+  divisionId     Int             @map("division_id")
+  groupLetter    String?         @map("group_letter") @db.Char(1)
+  homeTeamId     String          @map("home_team_id")
+  awayTeamId     String          @map("away_team_id")
+  matchDate      DateTime        @map("match_date")
+  matchTime      String          @map("match_time")
+  courtNumber    Int             @map("court_number")
+  status         MatchStatus     @default(scheduled)
+  refereeId      String?         @map("referee_id")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  protocol       MatchProtocol?
+  sets           MatchSet[]
+  awayTeam       Team            @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  division       Division        @relation(fields: [divisionId], references: [id])
+  homeTeam       Team            @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  referee        Referee?        @relation(fields: [refereeId], references: [id])
+  mvpVotes       MVPVote[]
+  refereeRatings RefereeRating[]
+
+  @@unique([matchDate, matchTime, courtNumber])
+  @@index([matchDate])
+  @@index([divisionId, groupLetter])
+  @@index([status])
+  @@map("matches")
+}
+
+model MatchSet {
+  matchId    String @map("match_id")
+  setNumber  Int    @map("set_number")
+  homePoints Int    @map("home_points")
+  awayPoints Int    @map("away_points")
+  match      Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@id([matchId, setNumber])
+  @@map("match_sets")
+}
+
+model MatchProtocol {
+  matchId         String     @id @map("match_id")
+  homeSetsWon     Int        @default(0) @map("home_sets_won")
+  awaySetsWon     Int        @default(0) @map("away_sets_won")
+  homeTotalPoints Int        @default(0) @map("home_total_points")
+  awayTotalPoints Int        @default(0) @map("away_total_points")
+  isValidated     Boolean    @default(false) @map("is_validated")
+  validatedAt     DateTime?  @map("validated_at")
+  validatedById   String?    @map("validated_by")
+  match           Match      @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  validatedBy     AdminUser? @relation(fields: [validatedById], references: [id])
+
+  @@map("match_protocols")
+}
+
+model MVPVote {
+  matchId      String    @map("match_id")
+  voterTeamId  String    @map("voter_team_id")
+  mvpPlayerId  String    @map("mvp_player_id")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  createdBy    String    @map("created_by")
+  adminCreator AdminUser @relation(fields: [createdBy], references: [id])
+  match        Match     @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  mvpPlayer    Player    @relation("MVPPlayer", fields: [mvpPlayerId], references: [id])
+  voterTeam    Team      @relation("VoterTeam", fields: [voterTeamId], references: [id])
+
+  @@id([matchId, voterTeamId])
+  @@index([mvpPlayerId])
+  @@map("mvp_votes")
+}
+
+model Referee {
+  id         String                   @id @default(uuid())
+  fullName   String                   @map("full_name") @db.VarChar(100)
+  phone      String?                  @db.VarChar(20)
+  email      String?                  @db.VarChar(100)
+  createdAt  DateTime                 @default(now()) @map("created_at")
+  matches    Match[]
+  ratings    RefereeRating[]
+  aggregated RefereeRatingAggregated?
+
+  @@map("referees")
+}
+
+model RefereeRating {
+  matchId      String    @map("match_id")
+  ratingTeamId String    @map("rating_team_id")
+  refereeId    String    @map("referee_id")
+  score        Int
+  createdAt    DateTime  @default(now()) @map("created_at")
+  createdBy    String    @map("created_by")
+  adminCreator AdminUser @relation(fields: [createdBy], references: [id])
+  match        Match     @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  ratingTeam   Team      @relation("RatingTeam", fields: [ratingTeamId], references: [id])
+  referee      Referee   @relation(fields: [refereeId], references: [id])
+
+  @@id([matchId, ratingTeamId])
+  @@index([refereeId])
+  @@map("referee_ratings")
+}
+
+model RefereeRatingAggregated {
+  refereeId        String   @id @map("referee_id")
+  matchesCount     Int      @default(0) @map("matches_count")
+  score5Count      Int      @default(0) @map("score5_count")
+  score4Count      Int      @default(0) @map("score4_count")
+  score3Count      Int      @default(0) @map("score3_count")
+  score2Count      Int      @default(0) @map("score2_count")
+  averageScore     Float    @default(0) @map("average_score")
+  uniqueTeamsCount Int      @default(0) @map("unique_teams_count")
+  finalScore       Float    @default(0) @map("final_score")
+  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at")
+  referee          Referee  @relation(fields: [refereeId], references: [id])
+
+  @@map("referee_ratings_aggregated")
+}
+
+model Document {
+  id            String           @id @default(uuid())
+  title         String           @db.VarChar(200)
+  description   String?
+  category      DocumentCategory
+  fileUrl       String           @map("file_url")
+  fileSize      Int              @map("file_size")
+  downloadCount Int              @default(0) @map("download_count")
+  isPublished   Boolean          @default(true) @map("is_published")
+  createdAt     DateTime         @default(now()) @map("created_at")
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+  uploadedById  String           @map("uploaded_by")
+  uploadedBy    AdminUser        @relation(fields: [uploadedById], references: [id])
+
+  @@index([category, isPublished])
+  @@map("documents")
+}
+
+model AdminUser {
+  id                    String            @id @default(uuid())
+  username              String            @unique @db.VarChar(50)
+  passwordHash          String            @map("password_hash") @db.VarChar(255)
+  createdAt             DateTime          @default(now()) @map("created_at")
+  uploadedDocuments     Document[]
+  validatedProtocols    MatchProtocol[]
+  createdMVPVotes       MVPVote[]
+  createdRefereeRatings RefereeRating[]
+  reviewedApplications  TeamApplication[]
+
+  @@map("admin_users")
+}
+
+enum DivisionEnum {
+  hard
+  medium
+  light
+}
+
+enum ApplicationStatus {
+  pending
+  approved
+  rejected
+}
+
+enum PositionEnum {
+  attacker
+  setter
+  libero
+  blocker
+}
+
+enum SkillLevelEnum {
+  light
+  light_plus
+  light_plus_plus
+  medium
+  medium_plus
+  hard
+  hard_plus
+}
+
+enum MatchStatus {
+  scheduled
+  in_progress
+  finished
+  forfeit
+}
+
+enum DocumentCategory {
+  regulations
+  volleyball_rules
+  referee_rules
+  other
+}
