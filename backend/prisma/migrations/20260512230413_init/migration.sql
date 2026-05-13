@@ -1,21 +1,3 @@
--- CreateEnum
-CREATE TYPE "DivisionEnum" AS ENUM ('hard', 'medium', 'light');
-
--- CreateEnum
-CREATE TYPE "ApplicationStatus" AS ENUM ('pending', 'approved', 'rejected');
-
--- CreateEnum
-CREATE TYPE "PositionEnum" AS ENUM ('attacker', 'setter', 'libero', 'blocker');
-
--- CreateEnum
-CREATE TYPE "SkillLevelEnum" AS ENUM ('light', 'light_plus', 'light_plus_plus', 'medium', 'medium_plus', 'hard', 'hard_plus');
-
--- CreateEnum
-CREATE TYPE "MatchStatus" AS ENUM ('scheduled', 'in_progress', 'finished', 'forfeit');
-
--- CreateEnum
-CREATE TYPE "DocumentCategory" AS ENUM ('regulations', 'volleyball_rules', 'referee_rules', 'other');
-
 -- CreateTable
 CREATE TABLE "divisions" (
     "id" SERIAL NOT NULL,
@@ -40,19 +22,41 @@ CREATE TABLE "seasons" (
 );
 
 -- CreateTable
+CREATE TABLE "tournament_settings" (
+    "id" INTEGER NOT NULL DEFAULT 1,
+    "name" TEXT NOT NULL DEFAULT 'Чемпионат по волейболу',
+    "start_date" TIMESTAMP(3) NOT NULL,
+    "end_date" TIMESTAMP(3) NOT NULL,
+    "play_days" TEXT[],
+    "courts_count" INTEGER NOT NULL DEFAULT 3,
+    "courts_names" TEXT[] DEFAULT ARRAY['Площадка 1', 'Площадка 2', 'Площадка 3']::TEXT[],
+    "time_slots" TEXT[] DEFAULT ARRAY['10:00', '12:00', '14:00', '16:00', '18:00', '20:00']::TEXT[],
+    "match_duration_minutes" INTEGER NOT NULL DEFAULT 90,
+    "break_between_matches" INTEGER NOT NULL DEFAULT 15,
+    "schedule_generated" BOOLEAN NOT NULL DEFAULT false,
+    "groups_configured" BOOLEAN NOT NULL DEFAULT false,
+    "updated_by" TEXT,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "tournament_settings_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "team_applications" (
     "id" TEXT NOT NULL,
     "team_name" VARCHAR(100) NOT NULL,
-    "division" "DivisionEnum" NOT NULL,
+    "division" TEXT NOT NULL,
     "captain_name" VARCHAR(100) NOT NULL,
     "captain_phone" VARCHAR(20) NOT NULL,
     "captain_email" VARCHAR(100) NOT NULL,
     "emblem_url" TEXT,
-    "status" "ApplicationStatus" NOT NULL DEFAULT 'pending',
+    "status" TEXT NOT NULL DEFAULT 'pending',
     "rejection_reason" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "reviewed_at" TIMESTAMP(3),
     "reviewed_by" TEXT,
+    "adminUserId" TEXT,
 
     CONSTRAINT "team_applications_pkey" PRIMARY KEY ("id")
 );
@@ -79,8 +83,8 @@ CREATE TABLE "players" (
     "full_name" VARCHAR(100) NOT NULL,
     "birth_date" TIMESTAMP(3) NOT NULL,
     "height_cm" INTEGER NOT NULL,
-    "position" "PositionEnum" NOT NULL,
-    "skill_level" "SkillLevelEnum" NOT NULL,
+    "position" TEXT NOT NULL,
+    "skill_level" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "players_pkey" PRIMARY KEY ("id")
@@ -93,8 +97,8 @@ CREATE TABLE "player_applications" (
     "full_name" VARCHAR(100) NOT NULL,
     "birth_date" TIMESTAMP(3) NOT NULL,
     "height_cm" INTEGER NOT NULL,
-    "position" "PositionEnum" NOT NULL,
-    "skill_level" "SkillLevelEnum" NOT NULL,
+    "position" TEXT NOT NULL,
+    "skill_level" TEXT NOT NULL,
 
     CONSTRAINT "player_applications_pkey" PRIMARY KEY ("id")
 );
@@ -109,7 +113,8 @@ CREATE TABLE "matches" (
     "match_date" TIMESTAMP(3) NOT NULL,
     "match_time" TEXT NOT NULL,
     "court_number" INTEGER NOT NULL,
-    "status" "MatchStatus" NOT NULL DEFAULT 'scheduled',
+    "court_name" TEXT,
+    "status" TEXT NOT NULL DEFAULT 'scheduled',
     "referee_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -195,7 +200,7 @@ CREATE TABLE "documents" (
     "id" TEXT NOT NULL,
     "title" VARCHAR(200) NOT NULL,
     "description" TEXT,
-    "category" "DocumentCategory" NOT NULL,
+    "category" TEXT NOT NULL,
     "file_url" TEXT NOT NULL,
     "file_size" INTEGER NOT NULL,
     "download_count" INTEGER NOT NULL DEFAULT 0,
@@ -205,6 +210,54 @@ CREATE TABLE "documents" (
     "uploaded_by" TEXT NOT NULL,
 
     CONSTRAINT "documents_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "archived_seasons" (
+    "id" SERIAL NOT NULL,
+    "season_id" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
+    "start_date" TIMESTAMP(3) NOT NULL,
+    "end_date" TIMESTAMP(3) NOT NULL,
+    "archived_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "archived_seasons_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "archived_standings" (
+    "id" SERIAL NOT NULL,
+    "season_id" INTEGER NOT NULL,
+    "team_id" TEXT NOT NULL,
+    "team_name" TEXT NOT NULL,
+    "division" TEXT NOT NULL,
+    "matches_played" INTEGER NOT NULL,
+    "wins" INTEGER NOT NULL,
+    "losses" INTEGER NOT NULL,
+    "sets_won" INTEGER NOT NULL,
+    "sets_lost" INTEGER NOT NULL,
+    "points_for" INTEGER NOT NULL,
+    "points_against" INTEGER NOT NULL,
+    "tournament_points" INTEGER NOT NULL,
+
+    CONSTRAINT "archived_standings_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "archived_matches" (
+    "id" SERIAL NOT NULL,
+    "season_id" INTEGER NOT NULL,
+    "division" TEXT NOT NULL,
+    "home_team_id" TEXT NOT NULL,
+    "home_team_name" TEXT NOT NULL,
+    "away_team_id" TEXT NOT NULL,
+    "away_team_name" TEXT NOT NULL,
+    "match_date" TIMESTAMP(3) NOT NULL,
+    "home_sets_won" INTEGER NOT NULL,
+    "away_sets_won" INTEGER NOT NULL,
+    "sets" JSONB NOT NULL DEFAULT '[]',
+
+    CONSTRAINT "archived_matches_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -260,7 +313,7 @@ CREATE INDEX "documents_category_is_published_idx" ON "documents"("category", "i
 CREATE UNIQUE INDEX "admin_users_username_key" ON "admin_users"("username");
 
 -- AddForeignKey
-ALTER TABLE "team_applications" ADD CONSTRAINT "team_applications_reviewed_by_fkey" FOREIGN KEY ("reviewed_by") REFERENCES "admin_users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "team_applications" ADD CONSTRAINT "team_applications_adminUserId_fkey" FOREIGN KEY ("adminUserId") REFERENCES "admin_users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "teams" ADD CONSTRAINT "teams_division_id_fkey" FOREIGN KEY ("division_id") REFERENCES "divisions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -324,3 +377,9 @@ ALTER TABLE "referee_ratings_aggregated" ADD CONSTRAINT "referee_ratings_aggrega
 
 -- AddForeignKey
 ALTER TABLE "documents" ADD CONSTRAINT "documents_uploaded_by_fkey" FOREIGN KEY ("uploaded_by") REFERENCES "admin_users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "archived_standings" ADD CONSTRAINT "archived_standings_season_id_fkey" FOREIGN KEY ("season_id") REFERENCES "archived_seasons"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "archived_matches" ADD CONSTRAINT "archived_matches_season_id_fkey" FOREIGN KEY ("season_id") REFERENCES "archived_seasons"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
