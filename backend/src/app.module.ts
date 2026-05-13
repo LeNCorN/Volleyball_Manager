@@ -10,14 +10,12 @@ import { SeasonModule } from './modules/season/season.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RedisModule } from './redis/redis.module';
 import configuration from './config/configuration';
-import { validationSchema } from './config/validation';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
-      validationSchema,  // теперь это объект с методом validate
       envFilePath: '.env',
     }),
     PrismaModule,

@@ -1,4 +1,3 @@
-// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -23,13 +22,15 @@ model Division {
 }
 
 model Season {
-  id                Int      @id @default(1) @map("season_id")
+  id                Int      @id @default(autoincrement()) @map("season_id")
+  name              String   @default("Новый сезон") @map("name")
   startDate         DateTime @map("start_date")
   endDate           DateTime @map("end_date")
   weeksCount        Int      @default(10) @map("weeks_count")
   isActive          Boolean  @default(true) @map("is_active")
   scheduleGenerated Boolean  @default(false) @map("schedule_generated")
   groupsConfigured  Boolean  @default(false) @map("groups_configured")
+  createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
 
   @@map("seasons")
@@ -47,9 +48,9 @@ model TournamentSettings {
   playDays             String[] @map("play_days")
   courtsCount          Int      @default(3) @map("courts_count")
   courtsNames          String[] @default(["Площадка 1", "Площадка 2", "Площадка 3"]) @map("courts_names")
-  timeSlots            String[] @default(["10:00", "12:00", "14:00", "16:00", "18:00", "20:00"]) @map("time_slots")
   matchDurationMinutes Int      @default(90) @map("match_duration_minutes")
-  breakBetweenMatches  Int      @default(15) @map("break_between_matches")
+  dayStartTime         String   @default("10:00") @map("day_start_time")
+  dayEndTime           String   @default("22:00") @map("day_end_time")
   scheduleGenerated    Boolean  @default(false) @map("schedule_generated")
   groupsConfigured     Boolean  @default(false) @map("groups_configured")
   updatedBy            String?  @map("updated_by")
