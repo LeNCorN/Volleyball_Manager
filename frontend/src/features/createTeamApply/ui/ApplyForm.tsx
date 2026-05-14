@@ -4,8 +4,6 @@ import { Button, Input, Select, Alert } from '@shared/ui';
 import { PlayerRowInput } from './PlayerRowInput';
 import { useCreateApplication } from '../model/useCreateApplication';
 import { DIVISIONS } from '@shared/lib/constants/divisions';
-import { POSITIONS, POSITION_LABELS } from '@shared/lib/constants/positions';
-import { SKILL_LEVELS, SKILL_LEVEL_LABELS } from '@shared/lib/constants/skillLevels';
 import { validateTeamName, validatePhone, validateEmail } from '../lib/validation';
 import styles from './ApplyForm.module.css';
 

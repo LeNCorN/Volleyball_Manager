@@ -2,6 +2,7 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as Minio from 'minio';
 import { Readable } from 'stream';
+import { Multer } from 'multer';
 
 @Injectable()
 export class MinioService implements OnModuleInit {

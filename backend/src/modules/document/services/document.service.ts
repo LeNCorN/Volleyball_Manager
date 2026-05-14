@@ -4,6 +4,7 @@ import { RedisService } from '../../../redis/redis.service';
 import { MinioService } from '../storage/minio.service';
 import { UploadDocumentDto, DocumentCategory } from '../dto/upload-document.dto';
 import { UpdateDocumentDto } from '../dto/update-document.dto';
+import { Multer } from 'multer';
 
 @Injectable()
 export class DocumentService {
