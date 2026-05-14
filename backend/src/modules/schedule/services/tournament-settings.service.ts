@@ -61,15 +61,18 @@ export class TournamentSettingsService {
   }
 
   private async createDefaultSettings() {
-    return this.prisma.tournamentSettings.create({
-      data: {
+    // Используем upsert вместо create, чтобы избежать ошибки уникальности
+    return this.prisma.tournamentSettings.upsert({
+      where: { id: 1 },
+      update: {},
+      create: {
         id: 1,
         name: SCHEDULE_CONSTANTS.DEFAULT_SETTINGS.name,
         startDate: new Date(),
         endDate: new Date(),
-        playDays: [...SCHEDULE_CONSTANTS.DEFAULT_SETTINGS.playDays], // Преобразуем в mutable массив
+        playDays: [...SCHEDULE_CONSTANTS.DEFAULT_SETTINGS.playDays],
         courtsCount: SCHEDULE_CONSTANTS.DEFAULT_SETTINGS.courtsCount,
-        courtsNames: [...SCHEDULE_CONSTANTS.DEFAULT_SETTINGS.courtsNames], // Преобразуем в mutable массив
+        courtsNames: [...SCHEDULE_CONSTANTS.DEFAULT_SETTINGS.courtsNames],
         matchDurationMinutes: SCHEDULE_CONSTANTS.DEFAULT_SETTINGS.matchDurationMinutes,
         dayStartTime: SCHEDULE_CONSTANTS.DEFAULT_SETTINGS.dayStartTime,
         dayEndTime: SCHEDULE_CONSTANTS.DEFAULT_SETTINGS.dayEndTime,

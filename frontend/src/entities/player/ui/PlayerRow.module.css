@@ -1,0 +1,103 @@
+.row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(74, 144, 226, 0.15);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.row:hover {
+    background: rgba(74, 144, 226, 0.1);
+}
+
+.name {
+    flex: 2;
+    font-weight: 500;
+    color: var(--color-white);
+}
+
+.team {
+    flex: 1.5;
+    color: var(--color-gray-300);
+    font-size: 14px;
+}
+
+.position {
+    flex: 1;
+    color: var(--color-gray-300);
+    font-size: 14px;
+}
+
+.skillBadge {
+    flex: 1;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    width: fit-content;
+}
+
+.default {
+    background: rgba(102, 102, 102, 0.3);
+    color: var(--color-gray-300);
+}
+
+.primary {
+    background: rgba(43, 91, 158, 0.3);
+    color: var(--color-bars-light);
+}
+
+.info {
+    background: rgba(74, 144, 226, 0.3);
+    color: var(--color-bars-light);
+}
+
+.danger {
+    background: rgba(193, 39, 45, 0.3);
+    color: #fca5a5;
+}
+
+.success {
+    background: rgba(16, 185, 129, 0.3);
+    color: #6ee7b7;
+}
+
+.warning {
+    background: rgba(245, 166, 35, 0.3);
+    color: #fcd34d;
+}
+
+.height, .age {
+    flex: 0.5;
+    text-align: center;
+    color: var(--color-gray-300);
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .row {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .name {
+        width: 100%;
+        flex: none;
+    }
+
+    .team, .position {
+        flex: 1;
+    }
+
+    .skillBadge {
+        order: 1;
+    }
+
+    .height, .age {
+        flex: 0.3;
+    }
+}

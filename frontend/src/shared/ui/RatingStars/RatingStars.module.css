@@ -1,0 +1,33 @@
+.ratingStars {
+    display: flex;
+    gap: 4px;
+}
+
+.star {
+    font-size: inherit;
+    cursor: default;
+}
+
+.star.interactive {
+    cursor: pointer;
+}
+
+.filled {
+    color: #fbbf24;
+}
+
+.empty {
+    color: #cbd5e1;
+}
+
+.sm .star {
+    font-size: 14px;
+}
+
+.md .star {
+    font-size: 18px;
+}
+
+.lg .star {
+    font-size: 24px;
+}

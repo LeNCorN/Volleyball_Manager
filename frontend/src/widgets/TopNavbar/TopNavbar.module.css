@@ -1,0 +1,88 @@
+.navbar {
+    background: rgba(11, 31, 59, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(74, 144, 226, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--color-white), var(--color-bars-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-decoration: none;
+}
+
+.navLinks {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.navLink {
+    padding: 8px 16px;
+    text-decoration: none;
+    color: var(--color-gray-200);
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.navLink:hover {
+    background: rgba(74, 144, 226, 0.2);
+    color: var(--color-white);
+}
+
+.applyButton {
+    background: linear-gradient(135deg, var(--color-bars-accent), var(--color-bars-primary));
+    color: var(--color-white);
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    margin-left: 8px;
+    box-shadow: var(--shadow-sm);
+}
+
+.applyButton:hover {
+    background: linear-gradient(135deg, var(--color-bars-light), var(--color-bars-accent));
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 16px;
+        height: 60px;
+    }
+
+    .logo {
+        font-size: 16px;
+    }
+
+    .navLink {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    .applyButton {
+        padding: 6px 14px;
+        font-size: 13px;
+    }
+}

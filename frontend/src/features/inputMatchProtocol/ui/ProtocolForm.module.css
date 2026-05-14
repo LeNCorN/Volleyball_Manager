@@ -1,0 +1,117 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.matchHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 16px;
+    background: linear-gradient(135deg, #1e3a8a, #1e40af);
+    border-radius: 12px;
+    color: white;
+}
+
+.team {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.vs {
+    font-size: 16px;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.setsSection, .mvpSection, .refereeSection {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.setsSection h3, .mvpSection h3, .refereeSection h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 16px;
+}
+
+.setRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.setNumber {
+    width: 70px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.setInput {
+    width: 80px;
+}
+
+.colon {
+    font-weight: 600;
+}
+
+.setButtons {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.mvpRow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.mvpRow span {
+    width: 200px;
+    font-size: 14px;
+}
+
+.mvpSelect {
+    flex: 1;
+}
+
+.ratingRow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.ratingRow span {
+    width: 200px;
+    font-size: 14px;
+}
+
+.stars {
+    display: flex;
+    gap: 16px;
+}
+
+.starLabel {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.errors {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.submit {
+    margin-top: 16px;
+}

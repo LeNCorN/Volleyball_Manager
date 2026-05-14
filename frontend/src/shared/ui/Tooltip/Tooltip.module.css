@@ -1,0 +1,89 @@
+.tooltipWrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip {
+    position: absolute;
+    background: #1e293b;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 100;
+    animation: fadeIn 0.15s ease;
+}
+
+.tooltip.top {
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 8px;
+}
+
+.tooltip.bottom {
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 8px;
+}
+
+.tooltip.left {
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-right: 8px;
+}
+
+.tooltip.right {
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 8px;
+}
+
+.arrow {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #1e293b;
+    transform: rotate(45deg);
+}
+
+.arrowtop {
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    margin-top: -3px;
+}
+
+.arrowbottom {
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    margin-bottom: -3px;
+}
+
+.arrowleft {
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+    margin-left: -3px;
+}
+
+.arrowright {
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+    margin-right: -3px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

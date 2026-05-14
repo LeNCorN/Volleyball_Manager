@@ -1,0 +1,15 @@
+.container {
+    min-height: calc(100vh - 70px);
+    padding: 32px 24px;
+}
+
+.homeButton {
+    max-width: 1000px;
+    margin: 0 auto 24px auto;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px 16px;
+    }
+}

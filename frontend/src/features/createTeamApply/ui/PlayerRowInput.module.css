@@ -1,0 +1,127 @@
+.container {
+    min-height: calc(100vh - 70px);
+    padding: 40px 20px;
+}
+
+.card {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: rgba(26, 58, 107, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 40px;
+    border: 1px solid rgba(74, 144, 226, 0.3);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--color-white);
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--color-white), var(--color-bars-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.subtitle {
+    color: var(--color-gray-300);
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(74, 144, 226, 0.3);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.section {
+    background: rgba(11, 31, 59, 0.5);
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid rgba(74, 144, 226, 0.2);
+}
+
+.sectionTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-white);
+    margin-bottom: 20px;
+    border-left: 3px solid var(--color-bars-light);
+    padding-left: 12px;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.playerCount {
+    font-size: 14px;
+    color: var(--color-bars-light);
+    background: rgba(74, 144, 226, 0.15);
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.playersHeader {
+    display: grid;
+    grid-template-columns: 2fr 1fr 0.8fr 1fr 1fr 40px;
+    gap: 12px;
+    padding: 10px 12px;
+    background: rgba(11, 31, 59, 0.6);
+    border-radius: 10px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-bars-light);
+}
+
+.addButton {
+    margin-top: 16px;
+    border-color: var(--color-bars-light);
+    color: var(--color-bars-light);
+}
+
+.addButton:hover {
+    background: rgba(74, 144, 226, 0.1);
+    border-color: var(--color-white);
+    color: var(--color-white);
+}
+
+.submitButton {
+    margin-top: 16px;
+    background: linear-gradient(135deg, var(--color-bars-accent), var(--color-bars-primary));
+}
+
+.submitButton:hover {
+    background: linear-gradient(135deg, var(--color-bars-light), var(--color-bars-accent));
+}
+
+.alert {
+    margin-bottom: 20px;
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+    .card {
+        padding: 24px;
+    }
+
+    .title {
+        font-size: 22px;
+    }
+
+    .playersHeader {
+        display: none;
+    }
+
+    .section {
+        padding: 16px;
+    }
+}

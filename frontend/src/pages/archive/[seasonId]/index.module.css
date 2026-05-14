@@ -1,0 +1,109 @@
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px 24px;
+}
+
+.header {
+    margin-bottom: 32px;
+}
+
+.backLink {
+    display: inline-block;
+    color: #64748b;
+    text-decoration: none;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.backLink:hover {
+    color: #2563eb;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.divisionNav {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.divisionButton {
+    padding: 10px 24px;
+    background: #f1f5f9;
+    border: none;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.divisionButton:hover {
+    background: #e2e8f0;
+}
+
+.divisionButton.active {
+    background: #2563eb;
+    color: white;
+}
+
+.tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.tabButton {
+    padding: 12px 24px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tabButton:hover {
+    color: #2563eb;
+}
+
+.tabButton.active {
+    color: #2563eb;
+    border-bottom: 2px solid #2563eb;
+}
+
+.content {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px 16px;
+    }
+
+    .title {
+        font-size: 22px;
+    }
+
+    .divisionButton {
+        padding: 8px 16px;
+        font-size: 12px;
+    }
+
+    .tabButton {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+}

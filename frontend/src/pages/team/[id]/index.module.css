@@ -1,0 +1,236 @@
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px 24px;
+}
+
+/* Шапка */
+.header {
+    background: linear-gradient(135deg, #1e3a8a, #1e40af);
+    border-radius: 24px;
+    padding: 32px;
+    margin-bottom: 32px;
+    color: white;
+}
+
+.headerContent {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.emblem {
+    flex-shrink: 0;
+}
+
+.emblemImage {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    background: white;
+    padding: 8px;
+}
+
+.emblemPlaceholder {
+    width: 120px;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+}
+
+.info {
+    flex: 1;
+}
+
+.teamName {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.badges {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.hard {
+    background: #dc2626;
+    color: white;
+}
+
+.light {
+    background: #10b981;
+    color: white;
+}
+
+.badgeGroup {
+    background: #f59e0b;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.stats {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.statLabel {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.statValue {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* Секции */
+.section {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sectionTitle {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+/* Таблица игроков */
+.playersTable {
+    overflow-x: auto;
+}
+
+.playersHeader {
+    display: grid;
+    grid-template-columns: 2fr 0.8fr 0.8fr 1.2fr 1fr;
+    gap: 16px;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #475569;
+    margin-bottom: 8px;
+}
+
+.playerRow {
+    display: grid;
+    grid-template-columns: 2fr 0.8fr 0.8fr 1.2fr 1fr;
+    gap: 16px;
+    padding: 12px;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 14px;
+}
+
+.playerRow:hover {
+    background: #f8fafc;
+}
+
+.playerName {
+    font-weight: 500;
+    color: #1e293b;
+}
+
+.skillLevel {
+    font-weight: 500;
+}
+
+/* Загрузка и ошибки */
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+}
+
+.notFound {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.notFound h2 {
+    font-size: 24px;
+    color: #1e293b;
+    margin-bottom: 16px;
+}
+
+.backLink {
+    color: #2563eb;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.backLink:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px 16px;
+    }
+
+    .header {
+        padding: 20px;
+    }
+
+    .headerContent {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .teamName {
+        font-size: 24px;
+    }
+
+    .stats {
+        justify-content: center;
+    }
+
+    .playersHeader,
+    .playerRow {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .playersHeader {
+        display: none;
+    }
+
+    .playerRow {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        margin-bottom: 12px;
+    }
+}

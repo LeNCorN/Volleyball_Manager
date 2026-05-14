@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { CreateApplicationDto, CreatePlayerInApplicationDto } from '../dto/create-application.dto';
+import { CreateApplicationDto } from '../dto/create-application.dto';
 import { ReviewApplicationDto } from '../dto/review-application.dto';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class ApplicationService {
         emblemUrl: applicationData.emblemUrl,
         status: 'pending',
         players: {
-          create: players.map((player: CreatePlayerInApplicationDto) => ({
+          create: players.map((player) => ({
             fullName: player.fullName,
             birthDate: new Date(player.birthDate),
             heightCm: player.heightCm,
@@ -80,6 +80,7 @@ export class ApplicationService {
       throw new BadRequestException(`Application already ${application.status}`);
     }
 
+    // Обновляем заявку
     const updatedApplication = await this.prisma.teamApplication.update({
       where: { id },
       data: {
@@ -90,7 +91,9 @@ export class ApplicationService {
       },
     });
 
+    // Если заявка одобрена, создаём команду
     if (reviewData.status === 'approved') {
+      // Находим division_id
       const division = await this.prisma.division.findFirst({
         where: { name: application.division },
       });
@@ -99,10 +102,16 @@ export class ApplicationService {
         throw new BadRequestException(`Division ${application.division} not found`);
       }
 
+      // Получаем игроков из заявки
       const playersFromApplication = await this.prisma.playerApplication.findMany({
         where: { applicationId: application.id },
       });
 
+      if (playersFromApplication.length === 0) {
+        throw new BadRequestException('No players found in application');
+      }
+
+      // Создаём команду
       const team = await this.prisma.team.create({
         data: {
           name: application.teamName,
@@ -120,6 +129,9 @@ export class ApplicationService {
               skillLevel: player.skillLevel,
             })),
           },
+        },
+        include: {
+          players: true,
         },
       });
 

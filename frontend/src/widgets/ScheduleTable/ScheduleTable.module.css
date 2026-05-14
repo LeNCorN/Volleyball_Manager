@@ -1,0 +1,89 @@
+.tableWrapper {
+    overflow-x: auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.th {
+    padding: 14px 12px;
+    background: #f8fafc;
+    font-weight: 600;
+    color: #1e293b;
+    border-bottom: 2px solid #e2e8f0;
+    text-align: left;
+}
+
+.td {
+    padding: 12px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #334155;
+}
+
+.tr {
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.tr:hover {
+    background: #f8fafc;
+}
+
+.finished {
+    background: #f0fdf4;
+}
+
+.result {
+    font-weight: 600;
+    color: #059669;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+}
+
+.vs {
+    font-weight: 500;
+    color: #94a3b8;
+}
+
+.status {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.scheduled {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.in_progress {
+    background: #fed7aa;
+    color: #9a3412;
+}
+
+.finished {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.forfeit {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.loading, .empty {
+    text-align: center;
+    padding: 40px;
+    color: #64748b;
+    background: white;
+    border-radius: 12px;
+}

@@ -1,0 +1,64 @@
+.tableWrapper {
+    overflow-x: auto;
+    background: rgba(26, 58, 107, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-xl);
+    border: 1px solid rgba(74, 144, 226, 0.2);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.th {
+    padding: 14px 12px;
+    background: rgba(11, 31, 59, 0.8);
+    font-weight: 700;
+    color: var(--color-white);
+    border-bottom: 2px solid var(--color-bars-accent);
+    text-align: center;
+}
+
+.th:first-child, .td:first-child {
+    text-align: center;
+}
+
+.th:nth-child(2), .td:nth-child(2) {
+    text-align: left;
+}
+
+.td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(74, 144, 226, 0.2);
+    color: var(--color-gray-200);
+    text-align: center;
+}
+
+.points {
+    font-weight: 700;
+    color: var(--color-bars-light);
+}
+
+.teamLink {
+    color: var(--color-white);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color var(--transition-fast);
+}
+
+.teamLink:hover {
+    color: var(--color-bars-light);
+    text-decoration: underline;
+}
+
+.tr:hover {
+    background: rgba(74, 144, 226, 0.1);
+}
+
+.loading, .empty {
+    text-align: center;
+    padding: 40px;
+    color: var(--color-gray-300);
+}

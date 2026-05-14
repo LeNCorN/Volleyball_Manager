@@ -1,0 +1,30 @@
+.container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.buttons {
+    display: flex;
+    gap: 16px;
+}
+
+.modalContent {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.modalButtons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+}

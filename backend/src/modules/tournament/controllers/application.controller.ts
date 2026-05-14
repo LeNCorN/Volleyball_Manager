@@ -19,10 +19,10 @@ export class ApplicationController {
     return this.applicationService.create(createDto);
   }
 
-  @UseGuards(AdminGuard)
+  @Public()  // Сделано публичным для просмотра заявок любым пользователем
   @Get()
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get all applications (Admin only)' })
+  @ApiOperation({ summary: 'Get all applications (public)' })
+  @ApiResponse({ status: 200, description: 'List of applications' })
   async findAll(@Query('status') status?: string) {
     return this.applicationService.findAll(status);
   }

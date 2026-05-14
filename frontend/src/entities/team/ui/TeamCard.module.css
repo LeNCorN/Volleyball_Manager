@@ -1,0 +1,98 @@
+.card {
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+.link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+/* Compact card styles */
+.compactCard {
+    width: 100%;
+}
+
+.compactContent {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.compactInfo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+}
+
+.compactName {
+    font-weight: 500;
+    font-size: 14px;
+}
+
+/* Badge styles */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 12px;
+    white-space: nowrap;
+}
+
+.hard {
+    background: #dc2626;
+    color: white;
+}
+
+.light {
+    background: #10b981;
+    color: white;
+}
+
+/* Header styles */
+.header {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.headerInfo {
+    flex: 1;
+}
+
+.name {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #1e293b;
+}
+
+/* Details styles */
+.details {
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.detailRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.detailLabel {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.detailValue {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1e293b;
+}

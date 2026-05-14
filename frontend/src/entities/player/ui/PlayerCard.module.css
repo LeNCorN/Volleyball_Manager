@@ -1,0 +1,83 @@
+.card {
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(26, 58, 107, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(74, 144, 226, 0.2);
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-bars-light);
+    box-shadow: var(--shadow-xl);
+    background: rgba(26, 58, 107, 0.9);
+}
+
+.header {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.headerInfo {
+    flex: 1;
+}
+
+.name {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--color-white);
+}
+
+.team {
+    font-size: 14px;
+    color: var(--color-gray-300);
+    display: block;
+    margin-bottom: 8px;
+}
+
+.divisionBadge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.hard {
+    background: rgba(193, 39, 45, 0.8);
+    color: white;
+}
+
+.light {
+    background: rgba(16, 185, 129, 0.8);
+    color: white;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.statLabel {
+    font-size: 11px;
+    color: var(--color-gray-400);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.statValue {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-white);
+}

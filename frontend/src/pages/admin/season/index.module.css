@@ -1,0 +1,181 @@
+.container {
+    padding: 24px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.title {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--color-white), var(--color-bars-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: var(--color-gray-300);
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+}
+
+.sectionTitle {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--color-white);
+    margin-bottom: 20px;
+    border-left: 4px solid var(--color-bars-light);
+    padding-left: 16px;
+}
+
+.currentSeason {
+    margin-bottom: 40px;
+}
+
+.seasonCard {
+    background: linear-gradient(135deg, rgba(11, 31, 59, 0.9), rgba(26, 58, 107, 0.8));
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    border: 1px solid rgba(74, 144, 226, 0.3);
+}
+
+.seasonInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.seasonName {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-white);
+}
+
+.seasonDates {
+    opacity: 0.8;
+    margin-bottom: 20px;
+    color: var(--color-gray-300);
+}
+
+.seasonActions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.noSeason {
+    background: rgba(26, 58, 107, 0.4);
+    border-radius: var(--radius-xl);
+    padding: 32px;
+    text-align: center;
+    color: var(--color-gray-300);
+    border: 1px solid rgba(74, 144, 226, 0.2);
+}
+
+.noSeason p {
+    margin-bottom: 16px;
+}
+
+.seasonsHistory {
+    margin-top: 32px;
+}
+
+.seasonsList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.historyCard {
+    background: rgba(26, 58, 107, 0.4);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    border: 1px solid rgba(74, 144, 226, 0.2);
+}
+
+.historyInfo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.historyName {
+    font-weight: 500;
+    color: var(--color-white);
+}
+
+.historyDates {
+    font-size: 14px;
+    color: var(--color-gray-300);
+}
+
+.empty {
+    text-align: center;
+    padding: 40px;
+    background: rgba(26, 58, 107, 0.4);
+    border-radius: var(--radius-lg);
+    color: var(--color-gray-300);
+    border: 1px solid rgba(74, 144, 226, 0.2);
+}
+
+.modalContent {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.dateRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.warning {
+    color: var(--color-bars-red);
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 16px;
+    }
+
+    .title {
+        font-size: 28px;
+    }
+
+    .dateRow {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .historyCard {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

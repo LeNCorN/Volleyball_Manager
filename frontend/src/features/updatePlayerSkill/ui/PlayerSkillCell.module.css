@@ -1,0 +1,53 @@
+.skillCell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.skillValue {
+    font-size: 14px;
+}
+
+.editBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.editBtn:hover {
+    opacity: 1;
+}
+
+.editCell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.select {
+    width: 120px;
+}
+
+.saveBtn, .cancelBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px;
+}
+
+.saveBtn {
+    color: #10b981;
+}
+
+.saveBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.cancelBtn {
+    color: #ef4444;
+}

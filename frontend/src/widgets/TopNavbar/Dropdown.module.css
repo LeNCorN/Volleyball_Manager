@@ -1,0 +1,66 @@
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdownTrigger {
+    background: none;
+    border: none;
+    color: var(--color-gray-200);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    font-family: inherit;
+}
+
+.dropdownTrigger:hover {
+    background: rgba(74, 144, 226, 0.2);
+    color: var(--color-white);
+}
+
+.dropdownMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: rgba(11, 31, 59, 0.98);
+    backdrop-filter: blur(12px);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(74, 144, 226, 0.3);
+    min-width: 200px;
+    z-index: 100;
+    overflow: hidden;
+    margin-top: 8px;
+    box-shadow: var(--shadow-xl);
+}
+
+.dropdownItem {
+    display: block;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: var(--color-gray-200);
+    font-size: 14px;
+    transition: all var(--transition-fast);
+}
+
+.dropdownItem:hover {
+    background: rgba(74, 144, 226, 0.2);
+    color: var(--color-white);
+}
+
+.navLink {
+    padding: 8px 16px;
+    text-decoration: none;
+    color: var(--color-gray-200);
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    display: inline-block;
+}
+
+.navLink:hover {
+    background: rgba(74, 144, 226, 0.2);
+    color: var(--color-white);
+}

@@ -1,0 +1,23 @@
+.card {
+    background: rgba(26, 58, 107, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-xl);
+    border: 1px solid rgba(74, 144, 226, 0.2);
+    transition: all var(--transition-normal);
+}
+
+.hoverable:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-bars-light);
+    box-shadow: var(--shadow-xl);
+    background: rgba(26, 58, 107, 0.95);
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.none { padding: 0; }
+.sm { padding: 12px; }
+.md { padding: 20px; }
+.lg { padding: 28px; }
