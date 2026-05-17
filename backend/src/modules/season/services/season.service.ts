@@ -1,4 +1,3 @@
-// src/modules/season/services/season.service.ts
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { RedisService } from '../../../redis/redis.service';
@@ -53,7 +52,6 @@ export class SeasonService {
   }
 
   async createSeason(dto: CreateSeasonDto) {
-    // Проверяем, есть ли уже активный сезон
     const activeSeason = await this.prisma.season.findFirst({
       where: { isActive: true },
     });
@@ -72,7 +70,6 @@ export class SeasonService {
       },
     });
 
-    // Обновляем настройки турнира с новыми датами
     await this.prisma.tournamentSettings.update({
       where: { id: 1 },
       data: {
@@ -97,19 +94,16 @@ export class SeasonService {
       throw new NotFoundException(`Сезон с ID ${seasonId} не найден`);
     }
 
-    // Деактивируем все сезоны
     await this.prisma.season.updateMany({
       where: {},
       data: { isActive: false },
     });
 
-    // Активируем выбранный сезон
     const activated = await this.prisma.season.update({
       where: { id: seasonId },
       data: { isActive: true },
     });
 
-    // Обновляем настройки турнира
     await this.prisma.tournamentSettings.update({
       where: { id: 1 },
       data: {

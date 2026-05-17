@@ -122,17 +122,16 @@ export class MatchService {
 
       if (homeSetsWon > awaySetsWon) {
         winnerTeamId = match.homeTeamId;
-        winnerTeamName = match.homeTeam.name;
+        winnerTeamName = match.homeTeam?.name;
       } else if (awaySetsWon > homeSetsWon) {
         winnerTeamId = match.awayTeamId;
-        winnerTeamName = match.awayTeam.name;
+        winnerTeamName = match.awayTeam?.name;
       }
     }
 
     const formattedDate = match.matchDate ? new Date(match.matchDate).toLocaleDateString('ru-RU') : '—';
     const formattedTime = match.matchTime ? match.matchTime.substring(0, 5) : '—';
 
-    // Форматируем список игроков для выбора MVP
     const homePlayers = match.homeTeam?.players?.map((player: any) => ({
       id: player.id,
       fullName: player.fullName,
@@ -143,6 +142,9 @@ export class MatchService {
       fullName: player.fullName,
     })) || [];
 
+    // Формируем результат для отображения
+    const result = match.protocol ? `${homeSetsWon}:${awaySetsWon}` : null;
+
     return {
       id: match.id,
       matchId: match.id,
@@ -150,10 +152,10 @@ export class MatchService {
       divisionName: match.division?.name === 'light' ? 'Лайт-лига' : 'Хард-лига',
       homeTeamId: match.homeTeamId,
       homeTeamName: match.homeTeam?.name || 'Неизвестно',
-      homePlayers,  // Добавляем список игроков хозяев
+      homePlayers,
       awayTeamId: match.awayTeamId,
       awayTeamName: match.awayTeam?.name || 'Неизвестно',
-      awayPlayers,  // Добавляем список игроков гостей
+      awayPlayers,
       matchDate: match.matchDate,
       matchDateFormatted: formattedDate,
       matchTime: formattedTime,
@@ -165,7 +167,7 @@ export class MatchService {
       awaySetsWon,
       winnerTeamId,
       winnerTeamName,
-      result: match.protocol ? `${homeSetsWon}:${awaySetsWon}` : null,
+      result, // Добавляем результат
       refereeId: match.refereeId,
     };
   }

@@ -10,20 +10,21 @@
 
 .backLink {
     display: inline-block;
-    color: #64748b;
+    color: var(--color-bars-light);
     text-decoration: none;
     margin-bottom: 16px;
     font-size: 14px;
 }
 
 .backLink:hover {
-    color: #2563eb;
+    color: var(--color-white);
 }
 
 .title {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--color-white);
+    margin-bottom: 8px;
 }
 
 .divisionNav {
@@ -35,30 +36,32 @@
 
 .divisionButton {
     padding: 10px 24px;
-    background: #f1f5f9;
-    border: none;
-    border-radius: 30px;
+    background: rgba(26, 58, 107, 0.6);
+    border: 1px solid rgba(74, 144, 226, 0.3);
+    border-radius: 40px;
     font-size: 14px;
     font-weight: 500;
-    color: #475569;
+    color: var(--color-gray-300);
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .divisionButton:hover {
-    background: #e2e8f0;
+    background: rgba(43, 91, 158, 0.8);
+    color: var(--color-white);
 }
 
 .divisionButton.active {
-    background: #2563eb;
-    color: white;
+    background: linear-gradient(135deg, var(--color-bars-accent), var(--color-bars-primary));
+    color: var(--color-white);
+    border-color: transparent;
 }
 
 .tabs {
     display: flex;
     gap: 8px;
     margin-bottom: 24px;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid rgba(74, 144, 226, 0.3);
 }
 
 .tabButton {
@@ -67,25 +70,110 @@
     border: none;
     font-size: 16px;
     font-weight: 500;
-    color: #64748b;
+    color: var(--color-gray-300);
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .tabButton:hover {
-    color: #2563eb;
+    color: var(--color-white);
 }
 
 .tabButton.active {
-    color: #2563eb;
-    border-bottom: 2px solid #2563eb;
+    color: var(--color-bars-light);
+    border-bottom: 2px solid var(--color-bars-light);
 }
 
 .content {
-    background: white;
-    border-radius: 16px;
+    background: rgba(26, 58, 107, 0.4);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-xl);
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(74, 144, 226, 0.2);
+    min-height: 400px;
+}
+
+/* Стили для таблицы матчей */
+.matchesTable {
+    padding: 20px;
+}
+
+.matchTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.matchTable th {
+    padding: 12px;
+    text-align: left;
+    background: rgba(11, 31, 59, 0.6);
+    color: var(--color-bars-light);
+    font-weight: 600;
+    border-bottom: 1px solid rgba(74, 144, 226, 0.2);
+}
+
+.matchTable td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(74, 144, 226, 0.15);
+    color: var(--color-white);
+}
+
+.matchRow:hover {
+    background: rgba(74, 144, 226, 0.1);
+}
+
+.matchDate {
+    white-space: nowrap;
+    color: var(--color-gray-300);
+    width: 110px;
+}
+
+.homeTeam, .awayTeam {
+    font-weight: 500;
+}
+
+.score {
+    text-align: center;
+    width: 100px;
+}
+
+.scoreValue {
+    font-weight: 700;
+    color: var(--color-bars-light);
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+}
+
+.emptyMatches {
+    text-align: center;
+    padding: 60px;
+    color: var(--color-gray-300);
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+}
+
+.error {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(26, 58, 107, 0.4);
+    border-radius: var(--radius-xl);
+}
+
+.error h2 {
+    font-size: 24px;
+    color: var(--color-white);
+    margin-bottom: 16px;
+}
+
+.error p {
+    color: var(--color-gray-300);
+    margin-bottom: 24px;
 }
 
 @media (max-width: 768px) {
@@ -94,7 +182,7 @@
     }
 
     .title {
-        font-size: 22px;
+        font-size: 24px;
     }
 
     .divisionButton {
@@ -105,5 +193,27 @@
     .tabButton {
         padding: 10px 16px;
         font-size: 14px;
+    }
+
+    .matchesTable {
+        padding: 12px;
+        overflow-x: auto;
+    }
+
+    .matchTable {
+        font-size: 12px;
+    }
+
+    .matchTable th,
+    .matchTable td {
+        padding: 8px;
+    }
+
+    .matchDate {
+        width: 80px;
+    }
+
+    .score {
+        width: 70px;
     }
 }

@@ -29,7 +29,7 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({ standings, loadi
         return <div className={styles.loading}>Загрузка...</div>;
     }
 
-    if (!standings.length) {
+    if (!standings || !standings.length) {
         return <div className={styles.empty}>Нет данных для отображения</div>;
     }
 

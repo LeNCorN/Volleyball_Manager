@@ -1,5 +1,3 @@
-// frontend/src/widgets/ScheduleTable/ScheduleTable.tsx
-
 import React from 'react';
 import { MatchResultTooltip } from '../MatchResultTooltip/MatchResultTooltip';
 import styles from './ScheduleTable.module.css';
@@ -10,12 +8,15 @@ interface ScheduledMatch {
     group: string | null;
     homeTeam: string;
     awayTeam: string;
-    date: Date;
-    time: string;
-    court: string;
+    date: Date | string;
+    time?: string;
+    court?: string;
     status: string;
     result: string | null;
     sets?: Array<{ homePoints: number; awayPoints: number }>;
+    matchDateFormatted?: string;
+    homeSetsWon?: number;
+    awaySetsWon?: number;
 }
 
 interface ScheduleTableProps {
@@ -47,32 +48,49 @@ export const ScheduleTable: React.FC<ScheduleTableProps> = ({ matches, loading }
                 </tr>
                 </thead>
                 <tbody>
-                {matches.map((match) => (
-                    <tr key={match.id} className={styles.tr}>
-                        <td className={styles.td}>{new Date(match.date).toLocaleDateString('ru-RU')}</td>
-                        <td className={styles.td}>{match.time}</td>
-                        <td className={styles.td}>{match.court}</td>
-                        <td className={styles.td}>{match.homeTeam}</td>
-                        <td className={styles.td}>
-                            {match.result ? (
-                                <MatchResultTooltip result={match.result} sets={match.sets}>
-                                    <span className={styles.result}>{match.result}</span>
-                                </MatchResultTooltip>
-                            ) : (
-                                <span className={styles.vs}>vs</span>
-                            )}
-                        </td>
-                        <td className={styles.td}>{match.awayTeam}</td>
-                        <td className={styles.td}>
-                <span className={`${styles.status} ${styles[match.status]}`}>
-                  {match.status === 'scheduled' && '📅 Запланирован'}
-                    {match.status === 'in_progress' && '🔄 В процессе'}
-                    {match.status === 'finished' && '✅ Завершён'}
-                    {match.status === 'forfeit' && '⚠️ Техническое поражение'}
-                </span>
-                        </td>
-                    </tr>
-                ))}
+                {matches.map((match) => {
+                    // Определяем дату
+                    const dateStr = match.matchDateFormatted
+                        ? match.matchDateFormatted
+                        : (match.date ? new Date(match.date).toLocaleDateString('ru-RU') : '—');
+
+                    // Определяем время
+                    const timeStr = match.time || '—';
+
+                    // Определяем площадку
+                    const courtStr = match.court || '—';
+
+                    // Определяем результат
+                    const isFinished = match.status === 'finished' || (match.homeSetsWon !== undefined && match.awaySetsWon !== undefined);
+                    const displayResult = isFinished && match.result ? match.result :
+                        (match.homeSetsWon !== undefined && match.awaySetsWon !== undefined)
+                            ? `${match.homeSetsWon}:${match.awaySetsWon}`
+                            : 'vs';
+
+                    return (
+                        <tr key={match.id} className={styles.tr}>
+                            <td className={styles.td}>{dateStr}</td>
+                            <td className={styles.td}>{timeStr}</td>
+                            <td className={styles.td}>{courtStr}</td>
+                            <td className={styles.td}>{match.homeTeam}</td>
+                            <td className={styles.td}>
+                                {isFinished && displayResult !== 'vs' ? (
+                                    <MatchResultTooltip result={displayResult} sets={match.sets}>
+                                        <span className={styles.result}>{displayResult}</span>
+                                    </MatchResultTooltip>
+                                ) : (
+                                    <span className={styles.vs}>{displayResult}</span>
+                                )}
+                            </td>
+                            <td className={styles.td}>{match.awayTeam}</td>
+                            <td className={styles.td}>
+                  <span className={`${styles.status} ${styles.finished}`}>
+                    {match.status === 'finished' || isFinished ? '✅ Завершён' : '📅 Запланирован'}
+                  </span>
+                            </td>
+                        </tr>
+                    );
+                })}
                 </tbody>
             </table>
         </div>

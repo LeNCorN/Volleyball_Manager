@@ -42,10 +42,18 @@ const AdminSeasonPage: React.FC = () => {
 
     const handleCloseSeason = () => {
         closeMutation.mutate(true, {
-            onSuccess: () => {
+            onSuccess: (data: any) => {
                 setIsCloseModalOpen(false);
                 refetch();
                 refetchCurrent();
+
+                if (data.data?.success === false) {
+                    alert(data.data.message);
+                } else if (data.data?.alreadyClosed) {
+                    alert('Сезон уже был завершён ранее.');
+                } else {
+                    alert('Сезон успешно завершён и архивирован!');
+                }
             },
             onError: (err: any) => {
                 setError(err.response?.data?.message || 'Ошибка при закрытии сезона');
