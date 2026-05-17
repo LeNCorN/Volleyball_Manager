@@ -86,6 +86,14 @@ export const ProtocolForm: React.FC<ProtocolFormProps> = ({
         });
     };
 
+    // Опции для оценки судьи (2-5)
+    const refereeScoreOptions = [
+        { value: 5, label: '5 ★★★★★' },
+        { value: 4, label: '4 ★★★★☆' },
+        { value: 3, label: '3 ★★★☆☆' },
+        { value: 2, label: '2 ★★☆☆☆' },
+    ];
+
     return (
         <div className={styles.container}>
             <div className={styles.matchHeader}>
@@ -94,6 +102,7 @@ export const ProtocolForm: React.FC<ProtocolFormProps> = ({
                 <span className={styles.team}>{awayTeamName}</span>
             </div>
 
+            {/* Секция сетов */}
             <div className={styles.setsSection}>
                 <h3>Результаты сетов</h3>
                 {sets.map((set, index) => (
@@ -104,6 +113,7 @@ export const ProtocolForm: React.FC<ProtocolFormProps> = ({
                             value={set.homePoints || ''}
                             onChange={(e) => updateSet(index, 'homePoints', parseInt(e.target.value) || 0)}
                             className={styles.setInput}
+                            placeholder="0"
                         />
                         <span className={styles.colon}>:</span>
                         <Input
@@ -111,6 +121,7 @@ export const ProtocolForm: React.FC<ProtocolFormProps> = ({
                             value={set.awayPoints || ''}
                             onChange={(e) => updateSet(index, 'awayPoints', parseInt(e.target.value) || 0)}
                             className={styles.setInput}
+                            placeholder="0"
                         />
                     </div>
                 ))}
@@ -125,6 +136,7 @@ export const ProtocolForm: React.FC<ProtocolFormProps> = ({
                 </div>
             </div>
 
+            {/* Секция MVP */}
             <div className={styles.mvpSection}>
                 <h3>Лучшие игроки матча (MVP)</h3>
 
@@ -132,7 +144,7 @@ export const ProtocolForm: React.FC<ProtocolFormProps> = ({
                     <span>MVP от команды {homeTeamName}</span>
                     <Select
                         options={[
-                            { value: '', label: 'Не выбран' },
+                            { value: '', label: '-- Выберите игрока --' },
                             ...homePlayers.map(p => ({ value: p.id, label: p.fullName })),
                         ]}
                         value={mvpHomeId}
@@ -145,7 +157,7 @@ export const ProtocolForm: React.FC<ProtocolFormProps> = ({
                     <span>MVP от команды {awayTeamName}</span>
                     <Select
                         options={[
-                            { value: '', label: 'Не выбран' },
+                            { value: '', label: '-- Выберите игрока --' },
                             ...awayPlayers.map(p => ({ value: p.id, label: p.fullName })),
                         ]}
                         value={mvpAwayId}
@@ -155,41 +167,42 @@ export const ProtocolForm: React.FC<ProtocolFormProps> = ({
                 </div>
             </div>
 
+            {/* Секция оценки судьи */}
             {refereeId && (
                 <div className={styles.refereeSection}>
                     <h3>Оценка судьи</h3>
 
                     <div className={styles.ratingRow}>
-                        <span>Оценка от {homeTeamName}</span>
+                        <span>Оценка от команды {homeTeamName}</span>
                         <div className={styles.stars}>
-                            {[5, 4, 3, 2].map((score) => (
-                                <label key={score} className={styles.starLabel}>
+                            {refereeScoreOptions.map((option) => (
+                                <label key={option.value} className={styles.starLabel}>
                                     <input
                                         type="radio"
                                         name="refereeRatingHome"
-                                        value={score}
-                                        checked={refereeRatingHome === score}
-                                        onChange={() => setRefereeRatingHome(score)}
+                                        value={option.value}
+                                        checked={refereeRatingHome === option.value}
+                                        onChange={() => setRefereeRatingHome(option.value)}
                                     />
-                                    {score} ★
+                                    {option.label}
                                 </label>
                             ))}
                         </div>
                     </div>
 
                     <div className={styles.ratingRow}>
-                        <span>Оценка от {awayTeamName}</span>
+                        <span>Оценка от команды {awayTeamName}</span>
                         <div className={styles.stars}>
-                            {[5, 4, 3, 2].map((score) => (
-                                <label key={score} className={styles.starLabel}>
+                            {refereeScoreOptions.map((option) => (
+                                <label key={option.value} className={styles.starLabel}>
                                     <input
                                         type="radio"
                                         name="refereeRatingAway"
-                                        value={score}
-                                        checked={refereeRatingAway === score}
-                                        onChange={() => setRefereeRatingAway(score)}
+                                        value={option.value}
+                                        checked={refereeRatingAway === option.value}
+                                        onChange={() => setRefereeRatingAway(option.value)}
                                     />
-                                    {score} ★
+                                    {option.label}
                                 </label>
                             ))}
                         </div>
@@ -197,6 +210,15 @@ export const ProtocolForm: React.FC<ProtocolFormProps> = ({
                 </div>
             )}
 
+            {/* Сообщение, если судья не назначен */}
+            {!refereeId && (
+                <div className={styles.refereeSection}>
+                    <h3>Оценка судьи</h3>
+                    <Alert type="warning" message="Судья не назначен на этот матч. Оценка недоступна." />
+                </div>
+            )}
+
+            {/* Ошибки валидации */}
             {validationErrors.length > 0 && (
                 <div className={styles.errors}>
                     {validationErrors.map((err, i) => (
@@ -205,10 +227,12 @@ export const ProtocolForm: React.FC<ProtocolFormProps> = ({
                 </div>
             )}
 
+            {/* Ошибка запроса */}
             {protocolMutation.isError && (
                 <Alert type="error" message="Ошибка при сохранении протокола" />
             )}
 
+            {/* Кнопка отправки */}
             <div className={styles.submit}>
                 <Button
                     variant="primary"

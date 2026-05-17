@@ -1,3 +1,5 @@
+// backend/src/modules/stats/services/standings.service.ts
+
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { RedisService } from '../../../redis/redis.service';
@@ -20,7 +22,7 @@ export class StandingsService {
     }
 
     const standings = await this.calculateStandings(division);
-    await this.redis.set(cacheKey, standings, 300); // 5 минут
+    await this.redis.set(cacheKey, standings, 300);
     return standings;
   }
 
@@ -50,6 +52,7 @@ export class StandingsService {
     const teamStats = new Map<string, TeamStanding>();
     const headToHeadResults = new Map<string, Map<string, string>>();
 
+    // Инициализация статистики
     for (const team of teams) {
       teamStats.set(team.id, {
         teamId: team.id,
@@ -62,9 +65,11 @@ export class StandingsService {
       });
     }
 
+    // Подсчёт статистики для каждой команды
     for (const team of teams) {
       const stats = teamStats.get(team.id)!;
 
+      // Домашние матчи
       for (const match of team.homeMatches) {
         const protocol = match.protocol;
         if (!protocol) continue;
@@ -77,7 +82,6 @@ export class StandingsService {
         const points = calculateTournamentPoints(protocol.homeSetsWon, protocol.awaySetsWon);
         stats.tournamentPoints += points.homePoints;
 
-        // Запись личной встречи
         if (!headToHeadResults.has(team.id)) {
           headToHeadResults.set(team.id, new Map());
         }
@@ -85,6 +89,7 @@ export class StandingsService {
         headToHeadResults.get(team.id)!.set(match.awayTeamId, winner);
       }
 
+      // Гостевые матчи
       for (const match of team.awayMatches) {
         const protocol = match.protocol;
         if (!protocol) continue;
@@ -94,8 +99,8 @@ export class StandingsService {
         stats.pointsFor += protocol.awayTotalPoints;
         stats.pointsAgainst += protocol.homeTotalPoints;
 
-        const points = calculateTournamentPoints(protocol.awaySetsWon, protocol.homeSetsWon);
-        stats.tournamentPoints += points.homePoints;
+        const points = calculateTournamentPoints(protocol.homeSetsWon, protocol.awaySetsWon);
+        stats.tournamentPoints += points.awayPoints;
 
         if (!headToHeadResults.has(team.id)) {
           headToHeadResults.set(team.id, new Map());
@@ -107,12 +112,11 @@ export class StandingsService {
 
     const sortedTeams = sortStandings(Array.from(teamStats.values()), headToHeadResults);
 
-    // Используем for...of вместо map с await
     const result: StandingsRowDto[] = [];
-    for (let index = 0; index < sortedTeams.length; index++) {
-      const team = sortedTeams[index];
+    for (let i = 0; i < sortedTeams.length; i++) {
+      const team = sortedTeams[i];
       result.push({
-        place: index + 1,
+        place: i + 1,
         teamId: team.teamId,
         teamName: team.teamName,
         matchesPlayed: await this.getMatchesPlayed(team.teamId),
@@ -142,21 +146,34 @@ export class StandingsService {
   }
 
   private async getWinsCount(teamId: string): Promise<number> {
-    const homeWins = await this.prisma.match.count({
-      where: {
-        homeTeamId: teamId,
-        status: 'finished',
-        protocol: { homeSetsWon: { gt: 0 } },
-      },
+    // Получаем все завершённые матчи команды
+    const homeMatches = await this.prisma.match.findMany({
+      where: { homeTeamId: teamId, status: 'finished' },
+      include: { protocol: true },
     });
-    const awayWins = await this.prisma.match.count({
-      where: {
-        awayTeamId: teamId,
-        status: 'finished',
-        protocol: { awaySetsWon: { gt: 0 } },
-      },
+
+    const awayMatches = await this.prisma.match.findMany({
+      where: { awayTeamId: teamId, status: 'finished' },
+      include: { protocol: true },
     });
-    return homeWins + awayWins;
+
+    let wins = 0;
+
+    // Подсчёт побед в домашних матчах
+    for (const match of homeMatches) {
+      if (match.protocol && match.protocol.homeSetsWon > match.protocol.awaySetsWon) {
+        wins++;
+      }
+    }
+
+    // Подсчёт побед в гостевых матчах
+    for (const match of awayMatches) {
+      if (match.protocol && match.protocol.awaySetsWon > match.protocol.homeSetsWon) {
+        wins++;
+      }
+    }
+
+    return wins;
   }
 
   private async getLossesCount(teamId: string): Promise<number> {

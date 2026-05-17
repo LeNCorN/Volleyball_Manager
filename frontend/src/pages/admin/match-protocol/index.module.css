@@ -1,0 +1,140 @@
+.container {
+    padding: 24px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.title {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--color-white), var(--color-bars-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: var(--color-gray-300);
+}
+
+.filters {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    margin-bottom: 24px;
+    padding: 20px;
+    background: rgba(26, 58, 107, 0.4);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(74, 144, 226, 0.2);
+}
+
+.filterSelect {
+    flex: 1;
+    min-width: 150px;
+}
+
+.refreshBtn {
+    margin-bottom: 6px;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+}
+
+.error {
+    text-align: center;
+    padding: 60px;
+    background: rgba(26, 58, 107, 0.4);
+    border-radius: var(--radius-lg);
+    color: var(--color-bars-red);
+}
+
+.matchesTable {
+    background: rgba(26, 58, 107, 0.4);
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+    border: 1px solid rgba(74, 144, 226, 0.2);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.table th,
+.table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid rgba(74, 144, 226, 0.2);
+}
+
+.table th {
+    background: rgba(11, 31, 59, 0.6);
+    font-weight: 600;
+    color: var(--color-bars-light);
+}
+
+.table td {
+    color: var(--color-white);
+}
+
+.row:hover {
+    background: rgba(74, 144, 226, 0.1);
+}
+
+.score {
+    font-weight: 600;
+    color: var(--color-bars-light);
+    text-align: center;
+}
+
+.vs {
+    color: var(--color-gray-400);
+    font-weight: normal;
+}
+
+.empty {
+    text-align: center;
+    padding: 60px;
+    color: var(--color-gray-300);
+}
+
+.emptyHint {
+    margin-top: 12px;
+    font-size: 14px;
+    color: var(--color-gray-400);
+}
+
+.generateBtn {
+    margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 16px;
+    }
+
+    .title {
+        font-size: 28px;
+    }
+
+    .filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .table th,
+    .table td {
+        padding: 8px;
+        font-size: 12px;
+    }
+}

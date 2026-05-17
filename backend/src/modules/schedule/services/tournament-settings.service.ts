@@ -20,8 +20,14 @@ export class TournamentSettingsService {
       settings = await this.createDefaultSettings();
     }
 
-    // Генерируем временные слоты на основе настроек
     const timeSlots = this.generateTimeSlotsFromSettings(settings);
+
+    console.log('Текущие настройки турнира:');
+    console.log(`- courtsCount: ${settings.courtsCount}`);
+    console.log(`- courtsNames: ${settings.courtsNames}`);
+    console.log(`- dayStartTime: ${settings.dayStartTime}`);
+    console.log(`- dayEndTime: ${settings.dayEndTime}`);
+    console.log(`- matchDurationMinutes: ${settings.matchDurationMinutes}`);
 
     return {
       ...settings,
@@ -32,7 +38,6 @@ export class TournamentSettingsService {
   async updateSettings(dto: UpdateTournamentSettingsDto) {
     const settings = await this.getSettings();
 
-    // Валидация
     if (dto.courtsCount && dto.courtsCount < 1) {
       throw new BadRequestException('Минимум 1 площадка');
     }
@@ -57,11 +62,11 @@ export class TournamentSettingsService {
     });
 
     await this.redis.del('tournament:settings');
+    console.log('Настройки турнира обновлены:', updated.courtsCount, 'площадок');
     return updated;
   }
 
   private async createDefaultSettings() {
-    // Используем upsert вместо create, чтобы избежать ошибки уникальности
     return this.prisma.tournamentSettings.upsert({
       where: { id: 1 },
       update: {},
@@ -127,7 +132,7 @@ export class TournamentSettingsService {
     }
 
     if (settings.courtsCount !== settings.courtsNames.length) {
-      errors.push('Количество названий площадок должно соответствовать количеству площадок');
+      errors.push(`Количество названий площадок (${settings.courtsNames.length}) должно соответствовать количеству площадок (${settings.courtsCount})`);
     }
 
     if (settings.playDays.length === 0) {

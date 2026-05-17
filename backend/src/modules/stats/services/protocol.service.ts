@@ -3,7 +3,6 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { RedisService } from '../../../redis/redis.service';
 import { InputProtocolDto } from '../dto/input-protocol.dto';
 import { SetValidator } from '../validators/set.validator';
-import { calculateTournamentPoints } from '../utils/calculate-points.util';
 
 @Injectable()
 export class ProtocolService {
@@ -143,14 +142,47 @@ export class ProtocolService {
       awaySetsWon: validation.awaySetsWon,
       homeTotalPoints: validation.homeTotalPoints,
       awayTotalPoints: validation.awayTotalPoints,
-      tournamentPoints: calculateTournamentPoints(validation.homeSetsWon, validation.awaySetsWon),
+    };
+  }
+
+  async assignReferee(matchId: string, refereeId: string, adminId: string) {
+    const match = await this.prisma.match.findUnique({
+      where: { id: matchId },
+    });
+
+    if (!match) {
+      throw new NotFoundException(`Match with ID ${matchId} not found`);
+    }
+
+    const referee = await this.prisma.referee.findUnique({
+      where: { id: refereeId },
+    });
+
+    if (!referee) {
+      throw new NotFoundException(`Referee with ID ${refereeId} not found`);
+    }
+
+    const updatedMatch = await this.prisma.match.update({
+      where: { id: matchId },
+      data: { refereeId },
+      include: {
+        referee: true,
+      },
+    });
+
+    // Инвалидация кэша расписания
+    await this.redis.invalidate('schedule:*');
+
+    return {
+      matchId: updatedMatch.id,
+      refereeId: updatedMatch.refereeId,
+      refereeName: updatedMatch.referee?.fullName,
     };
   }
 
   private async updateRefereeAggregatedStats(refereeId: string) {
     const ratings = await this.prisma.refereeRating.findMany({
       where: { refereeId },
-      include: { ratingTeam: true },
     });
 
     const matchesCount = ratings.length;

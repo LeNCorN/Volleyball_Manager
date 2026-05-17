@@ -1,3 +1,5 @@
+// frontend/src/widgets/ScheduleTable/ScheduleTable.tsx
+
 import React from 'react';
 import { MatchResultTooltip } from '../MatchResultTooltip/MatchResultTooltip';
 import styles from './ScheduleTable.module.css';
@@ -19,14 +21,9 @@ interface ScheduledMatch {
 interface ScheduleTableProps {
     matches: ScheduledMatch[];
     loading?: boolean;
-    onMatchClick?: (matchId: string) => void;
 }
 
-export const ScheduleTable: React.FC<ScheduleTableProps> = ({
-                                                                matches,
-                                                                loading,
-                                                                onMatchClick,
-                                                            }) => {
+export const ScheduleTable: React.FC<ScheduleTableProps> = ({ matches, loading }) => {
     if (loading) {
         return <div className={styles.loading}>Загрузка...</div>;
     }
@@ -51,11 +48,7 @@ export const ScheduleTable: React.FC<ScheduleTableProps> = ({
                 </thead>
                 <tbody>
                 {matches.map((match) => (
-                    <tr
-                        key={match.id}
-                        className={`${styles.tr} ${match.status === 'finished' ? styles.finished : ''}`}
-                        onClick={() => onMatchClick?.(match.id)}
-                    >
+                    <tr key={match.id} className={styles.tr}>
                         <td className={styles.td}>{new Date(match.date).toLocaleDateString('ru-RU')}</td>
                         <td className={styles.td}>{match.time}</td>
                         <td className={styles.td}>{match.court}</td>

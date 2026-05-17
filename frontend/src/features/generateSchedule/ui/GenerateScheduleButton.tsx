@@ -1,3 +1,5 @@
+// frontend/src/features/generateSchedule/ui/GenerateScheduleButton.tsx
+
 import React, { useState } from 'react';
 import { Button, Modal, Alert } from '@shared/ui';
 import { useGenerateSchedule, useClearSchedule } from '../model/useGenerateSchedule';
@@ -10,6 +12,7 @@ export const GenerateScheduleButton: React.FC = () => {
     const clearMutation = useClearSchedule();
 
     const handleGenerate = () => {
+        // Передаём объект с параметром overwrite, а не null
         generateMutation.mutate({ overwrite });
         setIsModalOpen(false);
     };
@@ -49,7 +52,7 @@ export const GenerateScheduleButton: React.FC = () => {
                     </label>
 
                     {generateMutation.isError && (
-                        <Alert type="error" message="Ошибка при генерации расписания" />
+                        <Alert type="error" message={generateMutation.error?.message || 'Ошибка при генерации расписания'} />
                     )}
 
                     <div className={styles.modalButtons}>

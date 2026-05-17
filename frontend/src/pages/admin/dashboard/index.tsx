@@ -22,9 +22,12 @@ const AdminDashboardPage: React.FC = () => {
         { path: ROUTES.ADMIN_WAITING_LIST, icon: '⏳', label: 'Лист ожидания', badge: waitingCount, color: '#f59e0b' },
         { path: ROUTES.ADMIN_TOURNAMENT_SETTINGS, icon: '⚙️', label: 'Настройки турнира', color: '#64748b' },
         { path: ROUTES.ADMIN_SCHEDULE_GENERATOR, icon: '🎲', label: 'Генерация расписания', color: '#8b5cf6' },
-        { path: ROUTES.ADMIN_PLAYERS, icon: '⭐', label: 'Управление игроками', color: '#10b981' },
-        { path: ROUTES.ADMIN_DOCUMENTS, icon: '📄', label: 'Управление документами', color: '#ef4444' },
-        { path: ROUTES.ADMIN_SEASON, icon: '📅', label: 'Управление сезонами', color: '#06b6d4' },
+        { path: ROUTES.ADMIN_MATCH_PROTOCOL_LIST, icon: '📝', label: 'Ввод протоколов', color: '#10b981' },
+        { path: ROUTES.ADMIN_PLAYERS, icon: '⭐', label: 'Управление игроками', color: '#ef4444' },
+        { path: ROUTES.ADMIN_DOCUMENTS, icon: '📄', label: 'Управление документами', color: '#06b6d4' },
+        { path: ROUTES.ADMIN_SEASON, icon: '📅', label: 'Управление сезонами', color: '#8b5cf6' },
+        { path: ROUTES.ADMIN_REFEREES, icon: '⚖️', label: 'Управление судьями', color: '#8b5cf6' },
+        { path: ROUTES.ADMIN_MATCH_REFEREE, icon: '👨‍⚖️', label: 'Назначение судей', color: '#f59e0b' },
     ];
 
     if (seasonLoading || appsLoading || waitingLoading) {

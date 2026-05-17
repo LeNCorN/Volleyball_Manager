@@ -1,4 +1,3 @@
-// src/modules/schedule/services/schedule.service.ts
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { RedisService } from '../../../redis/redis.service';
@@ -17,6 +16,8 @@ export class ScheduleService {
   ) {}
 
   async generateSchedule(dto: GenerateScheduleDto) {
+    const overwrite = dto?.overwrite ?? false;
+
     // Проверка настроек
     const settingsValid = await this.settingsService.validateSettings();
     if (!settingsValid.isValid) {
@@ -25,24 +26,42 @@ export class ScheduleService {
 
     // Проверка, что группы сформированы
     const season = await this.prisma.season.findUnique({ where: { id: 1 } });
-    if (!season?.groupsConfigured) {
-      throw new BadRequestException('Группы ещё не сформированы');
+    if (!season) {
+      throw new BadRequestException('Сезон не настроен');
     }
 
-    // Проверка, не сгенерировано ли уже расписание
-    if (season.scheduleGenerated && !dto.overwrite) {
-      throw new BadRequestException('Расписание уже сгенерировано. Используйте overwrite=true для перегенерации');
+    if (!season.groupsConfigured) {
+      throw new BadRequestException('Группы ещё не сформированы. Сначала сформируйте группы в разделе "Лист ожидания"');
     }
 
-    // Если overwrite=true, очищаем существующее расписание
-    if (dto.overwrite) {
+    // Если overwrite=true или расписание не генерировалось, очищаем существующее расписание
+    if (overwrite || !season.scheduleGenerated) {
       await this.prisma.match.deleteMany();
     }
 
     const settings = await this.settingsService.getSettings();
     const divisions = await this.prisma.division.findMany();
 
-    const allScheduledMatches: ScheduledMatch[] = [];
+    if (divisions.length === 0) {
+      throw new BadRequestException('Дивизионы не найдены');
+    }
+
+    // Получаем все возможные временные слоты
+    const allTimeSlots = this.generateTimeSlots(settings);
+    if (allTimeSlots.length === 0) {
+      throw new BadRequestException('Не удалось создать временные слоты. Проверьте настройки дат и времени');
+    }
+
+    console.log(`Всего создано ${allTimeSlots.length} временных слотов`);
+
+    // Собираем все матчи для всех дивизионов
+    interface MatchWithDivision {
+      divisionId: number;
+      groupLetter: string;
+      matchPair: MatchPair;
+    }
+
+    const allMatches: MatchWithDivision[] = [];
 
     for (const division of divisions) {
       const groups = await this.getGroupsByDivision(division.id);
@@ -53,23 +72,107 @@ export class ScheduleService {
           continue;
         }
 
-        // Генерация пар матчей по круговой системе
+        console.log(`\n========== Генерация матчей для ${division.name} - группа ${group.letter} ==========`);
+        console.log(`Команд: ${group.teams.length}`);
+
         const roundRobin = new RoundRobinAlgorithm();
         const matchPairs: MatchPair[] = roundRobin.generate(group.teams);
 
-        // Создание временных слотов
-        const timeSlots = this.generateTimeSlots(settings);
+        for (const matchPair of matchPairs) {
+          allMatches.push({
+            divisionId: division.id,
+            groupLetter: group.letter,
+            matchPair,
+          });
+        }
+      }
+    }
 
-        // Распределение по слотам
-        const allocator = new TimeSlotAllocator();
-        const scheduledMatches = allocator.allocate(matchPairs, timeSlots);
+    console.log(`\nВсего матчей для распределения: ${allMatches.length}`);
 
-        // Сохранение матчей в БД
-        for (const match of scheduledMatches) {
-          const savedMatch = await this.prisma.match.create({
+    // Перемешиваем матчи для равномерного распределения слотов между дивизионами
+    for (let i = allMatches.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [allMatches[i], allMatches[j]] = [allMatches[j], allMatches[i]];
+    }
+
+    // Группируем слоты по временным интервалам
+    const slotsByTimeSlot = this.groupSlotsByTimeSlot(allTimeSlots);
+    const sortedTimeKeys = Array.from(slotsByTimeSlot.keys()).sort();
+
+    const scheduledMatches: ScheduledMatch[] = [];
+    const usedSlots = new Set<string>();
+    const teamBusyTimes = new Map<string, Set<string>>();
+
+    let matchIndex = 0;
+
+    for (const timeKey of sortedTimeKeys) {
+      const courtSlots = slotsByTimeSlot.get(timeKey)!;
+      const [dateStr, startTime] = timeKey.split('_');
+
+      for (const slot of courtSlots) {
+        if (matchIndex >= allMatches.length) break;
+
+        const { divisionId, groupLetter, matchPair: match } = allMatches[matchIndex];
+        const slotKey = `${dateStr}_${startTime}_${slot.courtNumber}`;
+
+        if (usedSlots.has(slotKey)) continue;
+
+        const timeSlotKey = `${dateStr}_${startTime}`;
+        const homeBusy = teamBusyTimes.get(match.homeTeamId)?.has(timeSlotKey) || false;
+        const awayBusy = teamBusyTimes.get(match.awayTeamId)?.has(timeSlotKey) || false;
+
+        if (!homeBusy && !awayBusy) {
+          scheduledMatches.push({
+            homeTeamId: match.homeTeamId,
+            homeTeamName: match.homeTeamName,
+            awayTeamId: match.awayTeamId,
+            awayTeamName: match.awayTeamName,
+            round: match.round,
+            date: slot.date,
+            startTime: slot.startTime,
+            endTime: slot.endTime,
+            courtNumber: slot.courtNumber,
+            courtName: slot.courtName,
+            divisionId,
+            groupLetter,
+          });
+
+          usedSlots.add(slotKey);
+
+          if (!teamBusyTimes.has(match.homeTeamId)) {
+            teamBusyTimes.set(match.homeTeamId, new Set());
+          }
+          if (!teamBusyTimes.has(match.awayTeamId)) {
+            teamBusyTimes.set(match.awayTeamId, new Set());
+          }
+          teamBusyTimes.get(match.homeTeamId)!.add(timeSlotKey);
+          teamBusyTimes.get(match.awayTeamId)!.add(timeSlotKey);
+
+          matchIndex++;
+        }
+      }
+    }
+
+    console.log(`\nРаспределено ${scheduledMatches.length} из ${allMatches.length} матчей`);
+
+    // Сохраняем матчи в БД
+    let savedCount = 0;
+    for (const match of scheduledMatches) {
+      const existingMatch = await this.prisma.match.findFirst({
+        where: {
+          matchDate: match.date,
+          matchTime: match.startTime,
+          courtNumber: match.courtNumber,
+        },
+      });
+
+      if (!existingMatch) {
+        try {
+          await this.prisma.match.create({
             data: {
-              divisionId: division.id,
-              groupLetter: group.letter,
+              divisionId: match.divisionId!,
+              groupLetter: match.groupLetter!,
               homeTeamId: match.homeTeamId,
               awayTeamId: match.awayTeamId,
               matchDate: match.date,
@@ -79,25 +182,31 @@ export class ScheduleService {
               status: 'scheduled',
             },
           });
-          allScheduledMatches.push({ ...match, matchId: savedMatch.id });
+          savedCount++;
+        } catch (error) {
+          console.warn(`Ошибка при создании матча: ${error.message}`);
         }
       }
     }
 
-    // Обновляем флаг генерации расписания
+    if (savedCount === 0) {
+      throw new BadRequestException('Не удалось сгенерировать расписание. Возможно, недостаточно временных слотов для всех матчей');
+    }
+
     await this.prisma.season.update({
       where: { id: 1 },
       data: { scheduleGenerated: true },
     });
 
-    // Инвалидируем кэш
     await this.redis.del('schedule:all');
     await this.redis.invalidate('schedule:*');
 
+    console.log(`\n========== ИТОГО ==========`);
+    console.log(`Создано матчей: ${savedCount}`);
+
     return {
       message: 'Расписание успешно сгенерировано',
-      matchesCount: allScheduledMatches.length,
-      matches: allScheduledMatches,
+      matchesCount: savedCount,
     };
   }
 
@@ -176,12 +285,23 @@ export class ScheduleService {
     }));
   }
 
+  private groupSlotsByTimeSlot(timeSlots: TimeSlot[]): Map<string, TimeSlot[]> {
+    const slotsByTimeSlot = new Map<string, TimeSlot[]>();
+    for (const slot of timeSlots) {
+      const timeKey = `${slot.date.toISOString().split('T')[0]}_${slot.startTime}`;
+      if (!slotsByTimeSlot.has(timeKey)) {
+        slotsByTimeSlot.set(timeKey, []);
+      }
+      slotsByTimeSlot.get(timeKey)!.push(slot);
+    }
+    return slotsByTimeSlot;
+  }
+
   private generateTimeSlots(settings: any): TimeSlot[] {
     const slots: TimeSlot[] = [];
     const startDate = new Date(settings.startDate);
     const endDate = new Date(settings.endDate);
 
-    // Сопоставление дней недели
     const dayMap: Record<string, number> = {
       monday: 1, tuesday: 2, wednesday: 3, thursday: 4,
       friday: 5, saturday: 6, sunday: 0,
@@ -189,7 +309,6 @@ export class ScheduleService {
 
     const playDayNumbers = settings.playDays.map((day: string) => dayMap[day]);
 
-    // Генерация временных слотов на основе настроек
     const matchDuration = settings.matchDurationMinutes;
     const [startHour, startMinute] = (settings.dayStartTime || '10:00').split(':').map(Number);
     const [endHour, endMinute] = (settings.dayEndTime || '22:00').split(':').map(Number);
@@ -208,38 +327,50 @@ export class ScheduleService {
       currentMinutes += matchDuration;
     }
 
+    console.log(`Сгенерировано ${dayTimeSlots.length} временных слотов в день: ${dayTimeSlots.join(', ')}`);
+
     if (dayTimeSlots.length === 0) {
-      throw new BadRequestException('Некорректные настройки времени. Проверьте время начала, окончания и длительность матча');
+      return [];
     }
 
+    const courtsCount = settings.courtsCount;
+    const courtsNames = settings.courtsNames;
+
+    console.log(`Используется ${courtsCount} площадок: ${courtsNames.join(', ')}`);
+
     const currentDate = new Date(startDate);
+    let totalSlots = 0;
+
     while (currentDate <= endDate) {
       const dayOfWeek = currentDate.getDay();
 
       if (playDayNumbers.includes(dayOfWeek)) {
         for (const timeSlot of dayTimeSlots) {
-          const [hours, minutes] = timeSlot.split(':').map(Number);
-          const slotDate = new Date(currentDate);
-          slotDate.setHours(hours, minutes, 0, 0);
+          for (let i = 1; i <= courtsCount; i++) {
+            const slotDate = new Date(currentDate);
+            const [hours, minutes] = timeSlot.split(':').map(Number);
+            slotDate.setHours(hours, minutes, 0, 0);
 
-          const endTime = new Date(slotDate);
-          endTime.setMinutes(endTime.getMinutes() + matchDuration);
+            const endTime = new Date(slotDate);
+            endTime.setMinutes(endTime.getMinutes() + matchDuration);
 
-          for (let i = 1; i <= settings.courtsCount; i++) {
             slots.push({
               date: new Date(currentDate),
               startTime: timeSlot,
               endTime: endTime.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
               courtNumber: i,
-              courtName: settings.courtsNames[i - 1] || `Площадка ${i}`,
+              courtName: courtsNames[i - 1] || `Площадка ${i}`,
             });
+            totalSlots++;
           }
         }
+        console.log(`Для даты ${currentDate.toISOString().split('T')[0]} создано ${dayTimeSlots.length * courtsCount} слотов`);
       }
 
       currentDate.setDate(currentDate.getDate() + 1);
     }
 
+    console.log(`Всего создано ${totalSlots} временных слотов`);
     return slots;
   }
 

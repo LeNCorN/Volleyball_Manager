@@ -8,6 +8,14 @@ export interface TeamStanding {
   pointsAgainst: number;
 }
 
+/**
+ * Сравнение двух команд для сортировки турнирной таблицы
+ * Критерии в порядке приоритета:
+ * 1. Турнирные очки
+ * 2. Разница выигранных и проигранных сетов
+ * 3. Разница набранных и пропущенных очков (мячей)
+ * 4. Результат личной встречи
+ */
 export function compareTeams(a: TeamStanding, b: TeamStanding, headToHeadWinner?: string): number {
   // 1. Турнирные очки
   if (a.tournamentPoints !== b.tournamentPoints) {
@@ -35,7 +43,13 @@ export function compareTeams(a: TeamStanding, b: TeamStanding, headToHeadWinner?
   return 0;
 }
 
-export function sortStandings(standings: TeamStanding[], headToHeadResults: Map<string, Map<string, string>>): TeamStanding[] {
+/**
+ * Сортировка команд с учётом личных встреч
+ */
+export function sortStandings(
+  standings: TeamStanding[],
+  headToHeadResults: Map<string, Map<string, string>>
+): TeamStanding[] {
   return [...standings].sort((a, b) => {
     const headToHeadWinner = headToHeadResults.get(a.teamId)?.get(b.teamId);
     return compareTeams(a, b, headToHeadWinner);

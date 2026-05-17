@@ -6,11 +6,11 @@
 
 /* Шапка */
 .header {
-    background: linear-gradient(135deg, #1e3a8a, #1e40af);
+    background: linear-gradient(135deg, #1a3a6b, #0b1f3b);
     border-radius: 24px;
     padding: 32px;
     margin-bottom: 32px;
-    color: white;
+    color: #ffffff;
 }
 
 .headerContent {
@@ -52,6 +52,7 @@
     font-size: 32px;
     font-weight: 700;
     margin-bottom: 12px;
+    color: #ffffff;
 }
 
 .badges {
@@ -102,29 +103,31 @@
 .statLabel {
     font-size: 12px;
     opacity: 0.8;
+    color: #cbd5e1;
 }
 
 .statValue {
     font-size: 18px;
     font-weight: 600;
+    color: #ffffff;
 }
 
 /* Секции */
 .section {
-    background: white;
+    background: #1e293b;
     border-radius: 16px;
     padding: 24px;
     margin-bottom: 24px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #334155;
 }
 
 .sectionTitle {
     font-size: 20px;
     font-weight: 600;
-    color: #1e293b;
+    color: #ffffff;
     margin-bottom: 20px;
     padding-bottom: 12px;
-    border-bottom: 2px solid #e2e8f0;
+    border-bottom: 2px solid #334155;
 }
 
 /* Таблица игроков */
@@ -137,11 +140,11 @@
     grid-template-columns: 2fr 0.8fr 0.8fr 1.2fr 1fr;
     gap: 16px;
     padding: 12px;
-    background: #f8fafc;
+    background: #0f172a;
     border-radius: 8px;
     font-weight: 600;
     font-size: 14px;
-    color: #475569;
+    color: #94a3b8;
     margin-bottom: 8px;
 }
 
@@ -150,21 +153,30 @@
     grid-template-columns: 2fr 0.8fr 0.8fr 1.2fr 1fr;
     gap: 16px;
     padding: 12px;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid #334155;
     font-size: 14px;
+    color: #e2e8f0;
 }
 
 .playerRow:hover {
-    background: #f8fafc;
+    background: #334155;
 }
 
 .playerName {
     font-weight: 500;
-    color: #1e293b;
+    color: #ffffff;
 }
 
 .skillLevel {
     font-weight: 500;
+    color: #60a5fa;
+}
+
+.emptyPlayers, .emptySchedule {
+    text-align: center;
+    padding: 40px;
+    color: #94a3b8;
+    font-size: 14px;
 }
 
 /* Загрузка и ошибки */
@@ -182,12 +194,12 @@
 
 .notFound h2 {
     font-size: 24px;
-    color: #1e293b;
+    color: #ffffff;
     margin-bottom: 16px;
 }
 
 .backLink {
-    color: #2563eb;
+    color: #60a5fa;
     text-decoration: none;
     font-size: 16px;
 }
@@ -196,6 +208,7 @@
     text-decoration: underline;
 }
 
+/* Адаптив */
 @media (max-width: 768px) {
     .container {
         padding: 20px 16px;
@@ -229,7 +242,7 @@
     }
 
     .playerRow {
-        border: 1px solid #e2e8f0;
+        border: 1px solid #334155;
         border-radius: 12px;
         margin-bottom: 12px;
     }

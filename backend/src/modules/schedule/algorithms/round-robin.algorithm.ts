@@ -45,6 +45,7 @@ export class RoundRobinAlgorithm {
       teamsList.splice(1, 0, last);
     }
 
+    console.log(`Сгенерировано ${matches.length} матчей для ${n} команд`);
     return matches;
   }
 }

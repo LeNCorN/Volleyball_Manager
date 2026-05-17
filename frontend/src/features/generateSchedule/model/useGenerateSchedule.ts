@@ -1,3 +1,5 @@
+// frontend/src/features/generateSchedule/model/useGenerateSchedule.ts
+
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { scheduleApi, GenerateScheduleParams } from '../api/scheduleApi';
 

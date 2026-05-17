@@ -1,4 +1,4 @@
-// src/modules/schedule/algorithms/time-slot.allocator.ts
+// backend/src/modules/schedule/algorithms/time-slot.allocator.ts
 
 export interface TimeSlot {
   date: Date;
@@ -28,57 +28,54 @@ export interface ScheduledMatch {
   endTime: string;
   courtNumber: number;
   courtName: string;
+  divisionId?: number;
+  groupLetter?: string;
 }
 
 export class TimeSlotAllocator {
-  private usedSlots: Set<string> = new Set();
-  private teamAvailability: Map<string, Set<string>> = new Map();
-
-  private getSlotKey(date: Date, startTime: string, courtNumber: number): string {
-    return `${date.toISOString().split('T')[0]}_${startTime}_${courtNumber}`;
-  }
-
-  private isTeamAvailable(teamId: string, date: Date): boolean {
-    const dateKey = date.toISOString().split('T')[0];
-    const teamSlots = this.teamAvailability.get(teamId);
-    if (!teamSlots) return true;
-    return !teamSlots.has(dateKey);
-  }
-
-  private markTeamUsed(teamId: string, date: Date): void {
-    const dateKey = date.toISOString().split('T')[0];
-    if (!this.teamAvailability.has(teamId)) {
-      this.teamAvailability.set(teamId, new Set());
-    }
-    this.teamAvailability.get(teamId)!.add(dateKey);
-  }
-
-  allocate(
-    matches: MatchPair[],
-    timeSlots: TimeSlot[],
-  ): ScheduledMatch[] {
-    this.usedSlots.clear();
-    this.teamAvailability.clear();
-
+  allocate(matches: MatchPair[], timeSlots: TimeSlot[], existingUsedSlots: Set<string> = new Set()): ScheduledMatch[] {
     const scheduledMatches: ScheduledMatch[] = [];
-    const shuffledMatches = [...matches];
+    const usedSlots: Set<string> = new Set(existingUsedSlots);
+    const teamBusyTimes: Map<string, Set<string>> = new Map();
 
-    // Сортируем матчи по турам (приоритет сначала у матчей первого тура)
-    shuffledMatches.sort((a, b) => a.round - b.round);
+    // Группируем слоты по временному интервалу (дата + время)
+    const slotsByTimeSlot = new Map<string, TimeSlot[]>();
+    for (const slot of timeSlots) {
+      const timeKey = `${slot.date.toISOString().split('T')[0]}_${slot.startTime}`;
+      if (!slotsByTimeSlot.has(timeKey)) {
+        slotsByTimeSlot.set(timeKey, []);
+      }
+      slotsByTimeSlot.get(timeKey)!.push(slot);
+    }
 
-    for (const match of shuffledMatches) {
-      let allocated = false;
+    // Сортируем временные интервалы
+    const sortedTimeKeys = Array.from(slotsByTimeSlot.keys()).sort();
 
-      // Перебираем все доступные слоты
-      for (const slot of timeSlots) {
-        const slotKey = this.getSlotKey(slot.date, slot.startTime, slot.courtNumber);
+    // Копия матчей
+    const remainingMatches = [...matches];
+    let matchIndex = 0;
 
-        if (this.usedSlots.has(slotKey)) continue;
+    // Перебираем временные интервалы
+    for (const timeKey of sortedTimeKeys) {
+      const courtSlots = slotsByTimeSlot.get(timeKey)!;
+      const [dateStr, startTime] = timeKey.split('_');
 
-        const homeAvailable = this.isTeamAvailable(match.homeTeamId, slot.date);
-        const awayAvailable = this.isTeamAvailable(match.awayTeamId, slot.date);
+      // Для каждого временного интервала пытаемся заполнить ВСЕ доступные площадки
+      for (const slot of courtSlots) {
+        if (matchIndex >= remainingMatches.length) break;
 
-        if (homeAvailable && awayAvailable) {
+        const match = remainingMatches[matchIndex];
+        const slotKey = `${dateStr}_${startTime}_${slot.courtNumber}`;
+
+        // Проверяем, не занят ли слот
+        if (usedSlots.has(slotKey)) continue;
+
+        // Проверяем, не заняты ли команды в это время
+        const timeSlotKey = `${dateStr}_${startTime}`;
+        const homeBusy = teamBusyTimes.get(match.homeTeamId)?.has(timeSlotKey) || false;
+        const awayBusy = teamBusyTimes.get(match.awayTeamId)?.has(timeSlotKey) || false;
+
+        if (!homeBusy && !awayBusy) {
           scheduledMatches.push({
             homeTeamId: match.homeTeamId,
             homeTeamName: match.homeTeamName,
@@ -92,19 +89,23 @@ export class TimeSlotAllocator {
             courtName: slot.courtName,
           });
 
-          this.usedSlots.add(slotKey);
-          this.markTeamUsed(match.homeTeamId, slot.date);
-          this.markTeamUsed(match.awayTeamId, slot.date);
-          allocated = true;
-          break;
-        }
-      }
+          usedSlots.add(slotKey);
 
-      if (!allocated) {
-        console.warn(`Не удалось найти слот для матча: ${match.homeTeamName} vs ${match.awayTeamName}`);
+          if (!teamBusyTimes.has(match.homeTeamId)) {
+            teamBusyTimes.set(match.homeTeamId, new Set());
+          }
+          if (!teamBusyTimes.has(match.awayTeamId)) {
+            teamBusyTimes.set(match.awayTeamId, new Set());
+          }
+          teamBusyTimes.get(match.homeTeamId)!.add(timeSlotKey);
+          teamBusyTimes.get(match.awayTeamId)!.add(timeSlotKey);
+
+          matchIndex++;
+        }
       }
     }
 
+    console.log(`Распределено ${scheduledMatches.length} из ${matches.length} матчей`);
     return scheduledMatches;
   }
 }

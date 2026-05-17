@@ -1,8 +1,8 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTeamById } from '@entities/team';
-import { LoadingSpinner } from '@widgets/LoadingSpinner/LoadingSpinner';
 import { ScheduleTable } from '@widgets/ScheduleTable/ScheduleTable';
+import { LoadingSpinner } from '@widgets/LoadingSpinner/LoadingSpinner';
 import { ROUTES } from '@shared/lib/constants/routes';
 import styles from './index.module.css';
 
@@ -52,6 +52,20 @@ const TeamDetailsPage: React.FC = () => {
         );
     }
 
+    // Преобразуем расписание команды в формат для ScheduleTable
+    const scheduleMatches = (team.schedule || []).map((match: any) => ({
+        id: match.id,
+        division: team.division,
+        group: team.groupLetter,
+        homeTeam: match.isHome ? team.name : match.opponent,
+        awayTeam: match.isHome ? match.opponent : team.name,
+        date: new Date(match.date),
+        time: match.time,
+        court: match.court,
+        status: match.status,
+        result: match.result,
+    }));
+
     return (
         <div className={styles.container}>
             {/* Шапка команды */}
@@ -81,11 +95,11 @@ const TeamDetailsPage: React.FC = () => {
                             </div>
                             <div className={styles.stat}>
                                 <span className={styles.statLabel}>Средний рост</span>
-                                <span className={styles.statValue}>{team.avgHeight} см</span>
+                                <span className={styles.statValue}>{team.avgHeight || 0} см</span>
                             </div>
                             <div className={styles.stat}>
                                 <span className={styles.statLabel}>Средний возраст</span>
-                                <span className={styles.statValue}>{team.avgAge} лет</span>
+                                <span className={styles.statValue}>{team.avgAge || 0} лет</span>
                             </div>
                         </div>
                     </div>
@@ -103,22 +117,30 @@ const TeamDetailsPage: React.FC = () => {
                         <span>Позиция</span>
                         <span>Уровень</span>
                     </div>
-                    {team.players?.map((player: any) => (
-                        <div key={player.id} className={styles.playerRow}>
-                            <span className={styles.playerName}>{player.fullName}</span>
-                            <span>{player.heightCm} см</span>
-                            <span>{player.age} лет</span>
-                            <span>{getPositionLabel(player.position)}</span>
-                            <span className={styles.skillLevel}>{getSkillLevelLabel(player.skillLevel)}</span>
-                        </div>
-                    ))}
+                    {team.players && team.players.length > 0 ? (
+                        team.players.map((player: any) => (
+                            <div key={player.id} className={styles.playerRow}>
+                                <span className={styles.playerName}>{player.fullName}</span>
+                                <span>{player.heightCm} см</span>
+                                <span>{player.age} лет</span>
+                                <span>{getPositionLabel(player.position)}</span>
+                                <span className={styles.skillLevel}>{getSkillLevelLabel(player.skillLevel)}</span>
+                            </div>
+                        ))
+                    ) : (
+                        <div className={styles.emptyPlayers}>Нет игроков в составе</div>
+                    )}
                 </div>
             </section>
 
             {/* Расписание команды */}
             <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>Расписание матчей</h2>
-                <ScheduleTable matches={team.schedule || []} loading={false} />
+                {scheduleMatches.length > 0 ? (
+                    <ScheduleTable matches={scheduleMatches} loading={false} />
+                ) : (
+                    <div className={styles.emptySchedule}>Нет запланированных матчей</div>
+                )}
             </section>
         </div>
     );

@@ -1,3 +1,5 @@
+// frontend/src/features/generateSchedule/api/scheduleApi.ts
+
 import { apiClient } from '@shared/api/client';
 
 export interface GenerateScheduleParams {
@@ -5,8 +7,10 @@ export interface GenerateScheduleParams {
 }
 
 export const scheduleApi = {
-    generate: (params?: GenerateScheduleParams) => {
-        return apiClient.post('/schedule/generate', null, { params });
+    generate: async (params?: GenerateScheduleParams) => {
+        // Отправляем пустой объект, если нет параметров, вместо null
+        const body = params ? { overwrite: params.overwrite } : {};
+        return apiClient.post('/schedule/generate', body);
     },
 
     getSchedule: (division?: string, group?: string) => {

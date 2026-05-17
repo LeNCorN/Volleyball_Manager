@@ -12,7 +12,7 @@ export class GroupService {
     });
 
     if (!division) {
-      throw new BadRequestException(`Division ${divisionName} not found`);
+      throw new BadRequestException(`Дивизион ${divisionName} не найден`);
     }
 
     const waitingTeams = await this.prisma.team.findMany({
@@ -23,12 +23,33 @@ export class GroupService {
       orderBy: { createdAt: 'asc' },
     });
 
+    if (waitingTeams.length === 0) {
+      throw new BadRequestException(`Нет команд в листе ожидания для дивизиона ${divisionName}`);
+    }
+
     const teamsCount = waitingTeams.length;
     const groupsCount = dto.groupsCount;
     const teamsPerGroup = Math.ceil(teamsCount / groupsCount);
 
     if (teamsPerGroup > 10) {
-      throw new BadRequestException('Maximum 10 teams per group');
+      throw new BadRequestException('Максимум 10 команд в группе');
+    }
+
+    // Проверяем, есть ли уже сформированные группы
+    const existingGroups = await this.prisma.team.findFirst({
+      where: {
+        divisionId: division.id,
+        groupLetter: { not: null },
+        isWaiting: false,
+      },
+    });
+
+    if (existingGroups) {
+      // Если группы уже есть и нужно переформировать, сначала очищаем
+      await this.prisma.team.updateMany({
+        where: { divisionId: division.id },
+        data: { groupLetter: null, isWaiting: true },
+      });
     }
 
     const groups: { letter: string; teams: typeof waitingTeams }[] = [];
@@ -55,6 +76,7 @@ export class GroupService {
       }
     }
 
+    // Обновляем флаг groupsConfigured в сезоне
     await this.prisma.season.update({
       where: { id: 1 },
       data: { groupsConfigured: true },

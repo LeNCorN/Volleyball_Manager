@@ -25,8 +25,17 @@ export class MatchService {
     const matches = await this.prisma.match.findMany({
       where,
       include: {
-        homeTeam: true,
-        awayTeam: true,
+        homeTeam: {
+          include: {
+            players: true,  // Добавляем игроков команды хозяев
+          },
+        },
+        awayTeam: {
+          include: {
+            players: true,  // Добавляем игроков команды гостей
+          },
+        },
+        division: true,
         sets: {
           orderBy: { setNumber: 'asc' },
         },
@@ -42,8 +51,17 @@ export class MatchService {
     const match = await this.prisma.match.findUnique({
       where: { id },
       include: {
-        homeTeam: true,
-        awayTeam: true,
+        homeTeam: {
+          include: {
+            players: true,  // Добавляем игроков команды хозяев
+          },
+        },
+        awayTeam: {
+          include: {
+            players: true,  // Добавляем игроков команды гостей
+          },
+        },
+        division: true,
         sets: {
           orderBy: { setNumber: 'asc' },
         },
@@ -64,8 +82,17 @@ export class MatchService {
         OR: [{ homeTeamId: teamId }, { awayTeamId: teamId }],
       },
       include: {
-        homeTeam: true,
-        awayTeam: true,
+        homeTeam: {
+          include: {
+            players: true,
+          },
+        },
+        awayTeam: {
+          include: {
+            players: true,
+          },
+        },
+        division: true,
         sets: {
           orderBy: { setNumber: 'asc' },
         },
@@ -102,21 +129,44 @@ export class MatchService {
       }
     }
 
+    const formattedDate = match.matchDate ? new Date(match.matchDate).toLocaleDateString('ru-RU') : '—';
+    const formattedTime = match.matchTime ? match.matchTime.substring(0, 5) : '—';
+
+    // Форматируем список игроков для выбора MVP
+    const homePlayers = match.homeTeam?.players?.map((player: any) => ({
+      id: player.id,
+      fullName: player.fullName,
+    })) || [];
+
+    const awayPlayers = match.awayTeam?.players?.map((player: any) => ({
+      id: player.id,
+      fullName: player.fullName,
+    })) || [];
+
     return {
+      id: match.id,
       matchId: match.id,
+      division: match.division?.name || 'unknown',
+      divisionName: match.division?.name === 'light' ? 'Лайт-лига' : 'Хард-лига',
       homeTeamId: match.homeTeamId,
-      homeTeamName: match.homeTeam.name,
+      homeTeamName: match.homeTeam?.name || 'Неизвестно',
+      homePlayers,  // Добавляем список игроков хозяев
       awayTeamId: match.awayTeamId,
-      awayTeamName: match.awayTeam.name,
+      awayTeamName: match.awayTeam?.name || 'Неизвестно',
+      awayPlayers,  // Добавляем список игроков гостей
       matchDate: match.matchDate,
-      matchTime: match.matchTime,
+      matchDateFormatted: formattedDate,
+      matchTime: formattedTime,
       courtNumber: match.courtNumber,
+      courtName: match.courtName || `Площадка ${match.courtNumber}`,
       status: match.status,
       sets,
       homeSetsWon,
       awaySetsWon,
       winnerTeamId,
       winnerTeamName,
+      result: match.protocol ? `${homeSetsWon}:${awaySetsWon}` : null,
+      refereeId: match.refereeId,
     };
   }
 }

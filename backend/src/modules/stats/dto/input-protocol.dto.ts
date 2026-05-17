@@ -1,16 +1,16 @@
-import { IsArray, IsUUID, IsInt, Min, Max, ValidateNested, IsOptional } from 'class-validator';
+import { IsArray, IsUUID, IsInt, Min, Max, ValidateNested, IsOptional, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class SetScoreDto {
   @ApiProperty({ example: 25, description: 'Очки команды хозяев' })
-  @IsInt()
+  @IsNumber()
   @Min(0)
   @Max(99)
   homePoints: number;
 
   @ApiProperty({ example: 20, description: 'Очки команды гостей' })
-  @IsInt()
+  @IsNumber()
   @Min(0)
   @Max(99)
   awayPoints: number;

@@ -1,3 +1,5 @@
+// frontend/src/app/routing/AppRouter.tsx
+
 import { Routes, Route } from 'react-router-dom';
 import { ROUTES } from './routePaths';
 import { AdminRoute } from './AdminRoute';
@@ -26,10 +28,13 @@ import AdminApplicationsPage from '@pages/admin/applications';
 import AdminWaitingListPage from '@pages/admin/waiting-list';
 import AdminTournamentSettingsPage from '@pages/admin/tournament-settings';
 import AdminScheduleGeneratorPage from '@pages/admin/schedule-generator';
+import AdminMatchProtocolListPage from '@pages/admin/match-protocol';
 import AdminMatchProtocolPage from '@pages/admin/match-protocol/[matchId]';
 import AdminPlayersPage from '@pages/admin/players';
 import AdminDocumentsPage from '@pages/admin/documents';
 import AdminSeasonPage from '@pages/admin/season';
+import AdminRefereesPage from '@pages/admin/referees';
+import AdminMatchRefereePage from '@pages/admin/match-referee';
 
 export const AppRouter = () => {
     return (
@@ -65,10 +70,13 @@ export const AppRouter = () => {
                 <Route path={ROUTES.ADMIN_WAITING_LIST} element={<AdminWaitingListPage />} />
                 <Route path={ROUTES.ADMIN_TOURNAMENT_SETTINGS} element={<AdminTournamentSettingsPage />} />
                 <Route path={ROUTES.ADMIN_SCHEDULE_GENERATOR} element={<AdminScheduleGeneratorPage />} />
+                <Route path={ROUTES.ADMIN_MATCH_PROTOCOL_LIST} element={<AdminMatchProtocolListPage />} />
                 <Route path={ROUTES.ADMIN_MATCH_PROTOCOL(':matchId')} element={<AdminMatchProtocolPage />} />
                 <Route path={ROUTES.ADMIN_PLAYERS} element={<AdminPlayersPage />} />
                 <Route path={ROUTES.ADMIN_DOCUMENTS} element={<AdminDocumentsPage />} />
                 <Route path={ROUTES.ADMIN_SEASON} element={<AdminSeasonPage />} />
+                <Route path={ROUTES.ADMIN_REFEREES} element={<AdminRefereesPage />} />
+                <Route path={ROUTES.ADMIN_MATCH_REFEREE} element={<AdminMatchRefereePage />} />
             </Route>
         </Routes>
     );

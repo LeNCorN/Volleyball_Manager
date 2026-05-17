@@ -22,6 +22,9 @@ export const ROUTES = {
     ADMIN_WAITING_LIST: '/admin/waiting-list',
     ADMIN_TOURNAMENT_SETTINGS: '/admin/tournament-settings',
     ADMIN_SCHEDULE_GENERATOR: '/admin/schedule-generator',
+    ADMIN_MATCH_PROTOCOL_LIST: '/admin/match-protocol',
+    ADMIN_REFEREES: '/admin/referees',           // Управление судьями
+    ADMIN_MATCH_REFEREE: '/admin/match-referee', // Назначение судей на матчи
     ADMIN_MATCH_PROTOCOL: (matchId: string) => `/admin/match-protocol/${matchId}`,
     ADMIN_PLAYERS: '/admin/players',
     ADMIN_DOCUMENTS: '/admin/documents',

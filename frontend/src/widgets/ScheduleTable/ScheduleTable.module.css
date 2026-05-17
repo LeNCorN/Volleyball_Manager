@@ -1,8 +1,8 @@
 .tableWrapper {
     overflow-x: auto;
-    background: white;
+    background: #1e293b;
     border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #334155;
 }
 
 .table {
@@ -13,35 +13,26 @@
 
 .th {
     padding: 14px 12px;
-    background: #f8fafc;
+    background: #0f172a;
     font-weight: 600;
-    color: #1e293b;
-    border-bottom: 2px solid #e2e8f0;
+    color: #94a3b8;
+    border-bottom: 2px solid #334155;
     text-align: left;
 }
 
 .td {
     padding: 12px;
-    border-bottom: 1px solid #e2e8f0;
-    color: #334155;
-}
-
-.tr {
-    cursor: pointer;
-    transition: background 0.2s;
+    border-bottom: 1px solid #334155;
+    color: #e2e8f0;
 }
 
 .tr:hover {
-    background: #f8fafc;
-}
-
-.finished {
-    background: #f0fdf4;
+    background: #334155;
 }
 
 .result {
     font-weight: 600;
-    color: #059669;
+    color: #60a5fa;
     cursor: pointer;
     text-decoration: underline;
     text-decoration-style: dotted;
@@ -49,7 +40,7 @@
 
 .vs {
     font-weight: 500;
-    color: #94a3b8;
+    color: #64748b;
 }
 
 .status {
@@ -61,29 +52,29 @@
 }
 
 .scheduled {
-    background: #dbeafe;
-    color: #1e40af;
+    background: #1e40af;
+    color: #bfdbfe;
 }
 
 .in_progress {
-    background: #fed7aa;
-    color: #9a3412;
+    background: #b45309;
+    color: #fed7aa;
 }
 
 .finished {
-    background: #d1fae5;
-    color: #065f46;
+    background: #065f46;
+    color: #a7f3d0;
 }
 
 .forfeit {
-    background: #fee2e2;
-    color: #991b1b;
+    background: #991b1b;
+    color: #fecaca;
 }
 
 .loading, .empty {
     text-align: center;
     padding: 40px;
-    color: #64748b;
-    background: white;
+    color: #94a3b8;
+    background: #1e293b;
     border-radius: 12px;
 }

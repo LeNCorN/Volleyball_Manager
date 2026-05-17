@@ -1,4 +1,6 @@
-import { Controller, Get, Post, Delete, Query, Param, UseGuards } from '@nestjs/common';
+// backend/src/modules/schedule/controllers/schedule.controller.ts
+
+import { Controller, Get, Post, Delete, Query, Param, UseGuards, Body } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ScheduleService } from '../services/schedule.service';
 import { GenerateScheduleDto } from '../dto/generate-schedule.dto';
@@ -27,8 +29,10 @@ export class ScheduleController {
   @ApiOperation({ summary: 'Generate schedule (Admin only)' })
   @ApiResponse({ status: 200, description: 'Schedule generated' })
   @ApiResponse({ status: 400, description: 'Cannot generate schedule' })
-  async generateSchedule(@Query() dto: GenerateScheduleDto) {
-    return this.scheduleService.generateSchedule(dto);
+  async generateSchedule(@Body() dto: GenerateScheduleDto) {
+    // Если тело запроса пустое, используем значения по умолчанию
+    const overwrite = dto?.overwrite ?? false;
+    return this.scheduleService.generateSchedule({ overwrite });
   }
 
   @UseGuards(AdminGuard)
